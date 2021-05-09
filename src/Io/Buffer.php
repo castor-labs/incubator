@@ -1,34 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
+/**
+ * @project Castor Io
+ * @link https://github.com/castor-labs/io
+ * @package castor/io
+ * @author Matias Navarro-Carter mnavarrocarter@gmail.com
+ * @license MIT
+ * @copyright 2021 CastorLabs Ltd
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Castor\Io;
 
 use Stringable;
 
 /**
- * Class Buffer
- * @package Castor\Io
+ * Class Buffer.
  */
 final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, Stringable
 {
     use ResourceHelper;
 
     /**
-     * Creates an in-memory buffer of bytes
-     *
-     * @param string $string
-     * @return Buffer
-     * @throws Error
-     */
-    public static function from(string $string): Buffer
-    {
-        $buffer = new self(fopen('php://memory', 'w+b'));
-        $buffer->write($string);
-        return $buffer;
-    }
-
-    /**
      * Buffer constructor.
+     *
      * @param $resource
      */
     protected function __construct($resource)
@@ -37,7 +35,28 @@ final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, Strin
     }
 
     /**
-     * @inheritDoc
+     * @throws Error
+     */
+    public function __toString(): string
+    {
+        return readAll($this);
+    }
+
+    /**
+     * Creates an in-memory buffer of bytes.
+     *
+     * @throws Error
+     */
+    public static function from(string $string): Buffer
+    {
+        $buffer = new self(fopen('php://memory', 'w+b'));
+        $buffer->write($string);
+
+        return $buffer;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function read(string &$bytes, int $length = self::DEFAULT_READ_SIZE): int
     {
@@ -45,7 +64,7 @@ final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, Strin
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function readAt(int $offset, string &$bytes = '', int $length = Reader::DEFAULT_READ_SIZE): int
     {
@@ -53,7 +72,7 @@ final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, Strin
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function seek(int $offset, int $whence = Seeker::START): int
     {
@@ -61,7 +80,7 @@ final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, Strin
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function write(string $bytes): int
     {
@@ -69,19 +88,10 @@ final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, Strin
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function writeAt(int $offset, string $bytes): int
     {
         return $this->innerWriteAt($offset, $bytes);
-    }
-
-    /**
-     * @return string
-     * @throws Error
-     */
-    public function __toString(): string
-    {
-        return readAll($this);
     }
 }

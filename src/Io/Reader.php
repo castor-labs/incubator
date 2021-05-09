@@ -33,12 +33,13 @@ interface Reader
      * Due to composed readers acting on the $bytes, `read` MAY
      * return less bytes than the actually requested.
      *
-     * @param string $bytes The read byte string
-     * @param int $length The amount of bytes to be read
+     * @param string $bytes  The read byte string
+     * @param int    $length The amount of bytes to be read
+     *
+     * @throws Error
+     * @throws Eof   when the end of file is reached
      *
      * @return int The actual number of bytes read
-     * @throws Error
-     * @throws Eof when the end of file is reached
      */
     public function read(string &$bytes, int $length = self::DEFAULT_READ_SIZE): int;
 }
