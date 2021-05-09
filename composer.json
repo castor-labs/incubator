@@ -1,0 +1,38 @@
+{
+    "name": "castor/incubator",
+    "description": "composer require castor/incubator dev-master\n",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "keywords": ["php", "io", "input", "output", "golang", "php7"],
+    "authors": [
+        {
+            "name": "Matias Navarro Carter",
+            "email": "mnavarrocarter@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Castor\\": "src"
+        },
+        "files": ["functions.php"]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Castor\\": "tests"
+        }
+    },
+    "scripts": {
+        "fix": "php-cs-fixer fix",
+        "lint": "php-cs-fixer fix --dry-run -v",
+        "test": "XDEBUG_MODE=coverage phpunit --testdox --coverage-text",
+        "types": "psalm --stats"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "dev-master",
+        "phpunit/phpunit": "^9.5",
+        "vimeo/psalm": "^4.6"
+    }
+}
