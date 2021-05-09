@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * @project Castor Io
- * @link https://github.com/castor-labs/io
- * @package castor/io
+ * @project Castor Incubator
+ * @link https://github.com/castor-labs/incubator
+ * @package castor/incubator
  * @author Matias Navarro-Carter mnavarrocarter@gmail.com
  * @license MIT
  * @copyright 2021 CastorLabs Ltd
@@ -74,16 +74,13 @@ class Query implements \Stringable
         $this->params[urldecode($param)][] = urldecode($value);
     }
 
+    public function put(string $param, string $value): void
+    {
+        $this->params[urldecode($param)] = [urldecode($value)];
+    }
+
     public function has(string $param): bool
     {
         return array_key_exists($param, $this->params);
-    }
-
-    public function with(string $param, string $value): Query
-    {
-        $clone = clone $this;
-        $clone->params[$param][] = $value;
-
-        return $clone;
     }
 }

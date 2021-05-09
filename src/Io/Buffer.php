@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * @project Castor Io
- * @link https://github.com/castor-labs/io
- * @package castor/io
+ * @project Castor Incubator
+ * @link https://github.com/castor-labs/incubator
+ * @package castor/incubator
  * @author Matias Navarro-Carter mnavarrocarter@gmail.com
  * @license MIT
  * @copyright 2021 CastorLabs Ltd
@@ -39,6 +39,8 @@ final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, Strin
      */
     public function __toString(): string
     {
+        $this->seek(0, Seeker::START);
+
         return readAll($this);
     }
 
@@ -74,7 +76,7 @@ final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, Strin
     /**
      * {@inheritDoc}
      */
-    public function seek(int $offset, int $whence = Seeker::START): int
+    public function seek(int $offset = 0, int $whence = Seeker::CURRENT): int
     {
         return $this->innerSeek($offset, $whence);
     }

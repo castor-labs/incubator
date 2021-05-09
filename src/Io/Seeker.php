@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * @project Castor Io
- * @link https://github.com/castor-labs/io
- * @package castor/io
+ * @project Castor Incubator
+ * @link https://github.com/castor-labs/incubator
+ * @package castor/incubator
  * @author Matias Navarro-Carter mnavarrocarter@gmail.com
  * @license MIT
  * @copyright 2021 CastorLabs Ltd
@@ -29,5 +29,5 @@ interface Seeker
      *
      * @return int The new offset
      */
-    public function seek(int $offset, int $whence = self::START): int;
+    public function seek(int $offset = 0, int $whence = self::CURRENT): int;
 }

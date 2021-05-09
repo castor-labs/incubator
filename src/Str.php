@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * @project Castor Io
- * @link https://github.com/castor-labs/io
- * @package castor/io
+ * @project Castor Incubator
+ * @link https://github.com/castor-labs/incubator
+ * @package castor/incubator
  * @author Matias Navarro-Carter mnavarrocarter@gmail.com
  * @license MIT
  * @copyright 2021 CastorLabs Ltd
@@ -106,7 +106,7 @@ class Str implements Stringable
     public function match(string $pattern): Arr
     {
         $matches = [];
-        preg_match($pattern, $this->string, $matches);
+        preg_match('/'.$pattern.'/', $this->string, $matches);
 
         return Arr::fromArray($matches);
     }

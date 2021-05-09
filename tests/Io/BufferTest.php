@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * @project Castor Io
- * @link https://github.com/castor-labs/io
- * @package castor/io
+ * @project Castor Incubator
+ * @link https://github.com/castor-labs/incubator
+ * @package castor/incubator
  * @author Matias Navarro-Carter mnavarrocarter@gmail.com
  * @license MIT
  * @copyright 2021 CastorLabs Ltd
@@ -28,7 +28,7 @@ class BufferTest extends TestCase
     public function testBufferOperations(): void
     {
         $buffer = Buffer::from('Hello');
-        $buffer->seek(0);
+        $buffer->seek(0, Seeker::START);
         $bytes = '';
         $buffer->read($bytes, 1);
         self::assertSame('H', $bytes);
