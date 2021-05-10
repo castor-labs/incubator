@@ -21,4 +21,5 @@ namespace Castor\Net\Http;
  */
 interface Flusher
 {
+    public function flush(): void;
 }
