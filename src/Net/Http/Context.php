@@ -32,4 +32,22 @@ class Context
     {
         $this->data = $data;
     }
+
+    public function has(string $key): bool
+    {
+        return array_key_exists($key, $this->data);
+    }
+
+    public function put(string $key, $value): void
+    {
+        $this->data[$key] = $value;
+    }
+
+    /**
+     * @return null|mixed
+     */
+    public function get(string $key)
+    {
+        return $this->data[$key] ?? null;
+    }
 }

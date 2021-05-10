@@ -80,6 +80,14 @@ class Str implements Stringable
     /**
      * @return $this
      */
+    public function replace(string $search, string $replacement): Str
+    {
+        return Str::make(str_replace($search, $replacement, $this->string));
+    }
+
+    /**
+     * @return $this
+     */
     public function trim(string $chars, int $mode = self::TRIM_BOTH): Str
     {
         if (self::TRIM_LEFT === $mode) {
