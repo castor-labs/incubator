@@ -15,14 +15,10 @@ declare(strict_types=1);
 
 namespace Castor\Fiber;
 
-use Castor\Fs\File;
-use Castor\Net\Http\ProtocolError;
 use Castor\Net\Http\Request;
 use Castor\Net\Http\ResponseWriter;
 use const Castor\Net\Http\STATUS_FOUND;
-use const Castor\Net\Http\STATUS_NOT_FOUND;
 use const Castor\Net\Http\STATUS_OK;
-use Castor\Template\PhpEngine;
 use JsonException;
 
 /**
@@ -32,21 +28,14 @@ final class BaseContext implements Context
 {
     private ResponseWriter $writer;
     private Request $request;
-    private PhpEngine $engine;
 
     /**
      * BaseContext constructor.
      */
-    public function __construct(ResponseWriter $writer, Request $request, PhpEngine $engine)
+    public function __construct(ResponseWriter $writer, Request $request)
     {
         $this->writer = $writer;
         $this->request = $request;
-        $this->engine = $engine;
-    }
-
-    public static function fromDefaults(ResponseWriter $writer, Request $request): BaseContext
-    {
-        return new self($writer, $request, new PhpEngine('templates'));
     }
 
     /**
@@ -114,27 +103,23 @@ final class BaseContext implements Context
      */
     public function view(string $template, array $context = [], int $status = STATUS_OK): void
     {
-        $view = $this->engine->render($template, $context);
-        $this->writer->getHeaders()->add('Content-Type', 'text/html');
-        $this->writer->writeHeaders($status);
-        $view->writeTo($this->writer);
+        throw new \RuntimeException(sprintf(
+            'Class %s lacks view support. Use %s middleware',
+            __CLASS__,
+            TemplateSupport::class
+        ));
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @throws ProtocolError
      */
     public function file(string $path, string $name = null, int $status = STATUS_OK): void
     {
-        if (!File::exists($path)) {
-            throw new ProtocolError(STATUS_NOT_FOUND, 'Could not find file');
-        }
-        $file = File::open($path);
-        $this->writer->getHeaders()->add('Content-Type', $file->getContentType());
-        $this->writer->getHeaders()->add('Content-Length', (string) $file->getSize());
-        $this->writer->writeHeaders($status);
-        $file->writeTo($this->writer);
+        throw new \RuntimeException(sprintf(
+            'Class %s lacks file support. Use %s middleware',
+            __CLASS__,
+            LocalFileSupport::class
+        ));
     }
 
     /**

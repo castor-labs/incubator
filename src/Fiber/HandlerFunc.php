@@ -58,5 +58,6 @@ final class HandlerFunc implements Handler
         }
 
         // TODO: We attempt to inject services and parameters to this handler.
+        throw new \RuntimeException('Parameter reflection not implemented yet');
     }
 }

@@ -177,7 +177,7 @@ class Router implements Http\Handler, Handler
      */
     public function handleHTTP(Http\ResponseWriter $writer, Http\Request $request): void
     {
-        $context = BaseContext::fromDefaults($writer, $request);
+        $context = new BaseContext($writer, $request);
         $this->handle($context);
     }
 }

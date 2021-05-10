@@ -22,7 +22,7 @@ use RuntimeException;
  */
 final class PhpEngine implements Engine
 {
-    public const DEFAULT_EXT = '.phptml';
+    public const DEFAULT_EXT = '.phtml';
 
     private string $path;
     private string $extension;

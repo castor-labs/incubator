@@ -15,8 +15,11 @@ declare(strict_types=1);
 
 use Castor\Fiber\Context;
 use Castor\Fiber\HandlerFunc;
+use Castor\Fiber\LocalFileSupport;
 use Castor\Fiber\PlainTextErrorHandler;
 use Castor\Fiber\Router;
+use Castor\Fiber\TemplateSupport;
+use Castor\Template\PhpEngine;
 
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
@@ -25,7 +28,7 @@ require_once dirname(__DIR__).'/vendor/autoload.php';
 function hello(Context $ctx): void
 {
     $ctx->json([
-        'msg' => 'Hello world!',
+        'message' => 'Welcome to Fiber!',
     ]);
 }
 
