@@ -15,9 +15,20 @@ declare(strict_types=1);
 
 namespace Castor\Net\Http;
 
+use Throwable;
+
 /**
  * Class ProtocolError.
  */
 class ProtocolError extends \Exception
 {
+    /**
+     * ProtocolError constructor.
+     *
+     * @param string $message
+     */
+    public function __construct(int $status = STATUS_INTERNAL_SERVER_ERROR, $message = '', Throwable $previous = null)
+    {
+        parent::__construct($message, $status, $previous);
+    }
 }
