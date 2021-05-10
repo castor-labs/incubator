@@ -20,7 +20,7 @@ use Stringable;
 /**
  * Class Buffer.
  */
-final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, Stringable
+final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, WriterTo, Stringable
 {
     use ResourceHelper;
 
@@ -87,6 +87,14 @@ final class Buffer implements ReadSeeker, ReaderAt, WriteSeeker, WriterAt, Strin
     public function write(string $bytes): int
     {
         return $this->innerWrite($bytes);
+    }
+
+    /**
+     * @throws Error
+     */
+    public function writeTo(Writer $writer): int
+    {
+        return copy($this, $writer);
     }
 
     /**

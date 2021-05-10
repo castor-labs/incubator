@@ -12,7 +12,8 @@
     ],
     "require": {
         "php": ">=7.4",
-        "ext-json": "*"
+        "ext-json": "*",
+        "mnavarrocarter/path-to-regexp-php": "^1.0"
     },
     "autoload": {
         "psr-4": {

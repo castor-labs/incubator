@@ -13,15 +13,15 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Castor\Net\Http;
+namespace Castor\Template;
 
 /**
- * Interface Handler.
+ * Interface Engine.
  */
-interface Handler
+interface Engine
 {
     /**
-     * Handles a Request by building a response.
+     * Returns a view made out of a template.
      */
-    public function handleHTTP(ResponseWriter $writer, Request $request): void;
+    public function render(string $templateName, array $context = []): View;
 }

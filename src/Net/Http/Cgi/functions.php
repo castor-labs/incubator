@@ -17,7 +17,6 @@ namespace Castor\Net\Http\Cgi;
 
 use Castor\Io;
 use Castor\Net\Http;
-use Throwable;
 
 /**
  * The serve method runs a handler in a CGI context.
@@ -44,16 +43,7 @@ function serve(Http\Handler $handler, bool $unsetGlobals = true): void
         unset($_GET, $_POST, $_FILES, $_SERVER, $_SESSION, $_REQUEST);
     }
 
-    try {
-        $handler->handle($writer, $request);
-    } catch (Throwable $err) {
-        if (!$err instanceof Http\ProtocolError) {
-            $err = new Http\ProtocolError(Http\STATUS_INTERNAL_SERVER_ERROR, 'An error has occurred', $err);
-        }
-        $writer->getHeaders()->add('Content-Type', 'text/plain');
-        $writer->writeHeaders($err->getCode());
-        $writer->write('Internal Server Error');
-    }
+    $handler->handleHTTP($writer, $request);
     $writer->flush();
     $request->getBody()->close();
 }

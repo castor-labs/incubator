@@ -33,7 +33,7 @@ final class CallableHandler implements Handler
         $this->callable = $callable;
     }
 
-    public function handle(ResponseWriter $writer, Request $request): void
+    public function handleHTTP(ResponseWriter $writer, Request $request): void
     {
         ($this->callable)($writer, $request);
     }

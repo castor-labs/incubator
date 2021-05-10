@@ -1,0 +1,50 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @project Castor Incubator
+ * @link https://github.com/castor-labs/incubator
+ * @package castor/incubator
+ * @author Matias Navarro-Carter mnavarrocarter@gmail.com
+ * @license MIT
+ * @copyright 2021 CastorLabs Ltd
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Castor\Template;
+
+use RuntimeException;
+
+/**
+ * Class PhpEngine.
+ */
+final class PhpEngine implements Engine
+{
+    public const DEFAULT_EXT = '.phptml';
+
+    private string $path;
+    private string $extension;
+
+    /**
+     * PhpEngine constructor.
+     */
+    public function __construct(string $path, string $extension = self::DEFAULT_EXT)
+    {
+        $this->path = $path;
+        $this->extension = $extension;
+    }
+
+    public function render(string $templateName, array $context = []): View
+    {
+        $templateName = str_replace('.', DIRECTORY_SEPARATOR, $templateName).$this->extension;
+        $filename = $this->path.DIRECTORY_SEPARATOR.$templateName;
+
+        if (!file_exists($filename)) {
+            throw new RuntimeException(sprintf('Template file "%s" not found at "%s"', $templateName, $this->path));
+        }
+
+        return new PhpView($filename, $context);
+    }
+}

@@ -13,15 +13,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Castor\Net\Http;
+namespace Castor\Template;
+
+use Castor\Io\Reader;
+use Castor\Io\WriterTo;
 
 /**
- * Interface Handler.
+ * Interface View.
  */
-interface Handler
+interface View extends WriterTo, Reader
 {
-    /**
-     * Handles a Request by building a response.
-     */
-    public function handleHTTP(ResponseWriter $writer, Request $request): void;
 }

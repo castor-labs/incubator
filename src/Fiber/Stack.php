@@ -13,15 +13,12 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Castor\Net\Http;
+namespace Castor\Fiber;
 
 /**
- * Interface Handler.
+ * Class Stack.
  */
-interface Handler
+interface Stack
 {
-    /**
-     * Handles a Request by building a response.
-     */
-    public function handleHTTP(ResponseWriter $writer, Request $request): void;
+    public function next(): Handler;
 }

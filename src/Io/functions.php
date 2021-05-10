@@ -50,12 +50,6 @@ function readAll(Reader $reader, int $chunk = Reader::DEFAULT_READ_SIZE): string
  */
 function copy(Reader $reader, Writer $writer, int $chunk = 4096): int
 {
-    if ($reader instanceof WriterTo) {
-        return $reader->writeTo($writer);
-    }
-    if ($writer instanceof ReaderFrom) {
-        return $writer->readFrom($reader);
-    }
     $copied = 0;
     $bytes = '';
     while (true) {

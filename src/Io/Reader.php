@@ -36,8 +36,8 @@ interface Reader
      * @param string $bytes  The read byte string
      * @param int    $length The amount of bytes to be read
      *
-     * @throws Error
      * @throws Eof   when the end of file is reached
+     * @throws Error when a reading error occurs
      *
      * @return int The actual number of bytes read
      */

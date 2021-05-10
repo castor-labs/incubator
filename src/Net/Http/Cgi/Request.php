@@ -49,7 +49,7 @@ final class Request extends Http\Request
         $uri = Uri::marshalFromSapi($server, $headers->toMap());
         $protocol = self::marshalProtocolFromSapi($server);
 
-        return new self($method, $uri, $protocol, $headers, $body, new Http\Context(['server' => $_SERVER]));
+        return new self($method, $uri, $protocol, $headers, $body, new Http\Context(['_server' => $_SERVER]));
     }
 
     private static function normalizeServer(array $server, callable $apacheRequestHeaderCallback = null): array

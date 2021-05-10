@@ -17,3 +17,4 @@ require_once __DIR__.'/src/Io/functions.php';
 require_once __DIR__.'/src/Net/Dns/functions.php';
 require_once __DIR__.'/src/Net/Http/functions.php';
 require_once __DIR__.'/src/Net/Http/Cgi/functions.php';
+require_once __DIR__.'/src/Fs/functions.php';
