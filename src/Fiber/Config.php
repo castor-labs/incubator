@@ -13,9 +13,15 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-require_once __DIR__.'/src/Io/functions.php';
-require_once __DIR__.'/src/Net/functions.php';
-require_once __DIR__.'/src/Net/Dns/functions.php';
-require_once __DIR__.'/src/Net/Http/functions.php';
-require_once __DIR__.'/src/Net/Http/Cgi/functions.php';
-require_once __DIR__.'/src/Fs/functions.php';
+namespace Castor\Fiber;
+
+use Castor\Template\Engine;
+
+/**
+ * Class Config.
+ */
+class Config
+{
+    public ?Handler $fallback = null;
+    public ?Engine $engine = null;
+}

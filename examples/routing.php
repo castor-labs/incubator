@@ -15,11 +15,9 @@ declare(strict_types=1);
 
 use Castor\Fiber\Context;
 use Castor\Fiber\HandlerFunc;
-use Castor\Fiber\LocalFileSupport;
 use Castor\Fiber\PlainTextErrorHandler;
 use Castor\Fiber\Router;
-use Castor\Fiber\TemplateSupport;
-use Castor\Template\PhpEngine;
+use Castor\Fiber\ServeStatic;
 
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
@@ -34,6 +32,7 @@ function hello(Context $ctx): void
 
 $router = Router::create()
     ->use(new PlainTextErrorHandler())
+    ->use(ServeStatic::from('static'))
     ->get('/', HandlerFunc::make('hello'))
 ;
 

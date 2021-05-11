@@ -19,23 +19,27 @@ use Castor\Net\Http\Request;
 use Castor\Net\Http\ResponseWriter;
 use const Castor\Net\Http\STATUS_FOUND;
 use const Castor\Net\Http\STATUS_OK;
+use Castor\Template\Engine;
+use Castor\Template\PhpEngine;
 use JsonException;
 
 /**
  * Class BaseContext.
  */
-final class BaseContext implements Context
+final class DefaultContext implements Context
 {
     private ResponseWriter $writer;
     private Request $request;
+    private ?PhpEngine $engine;
 
     /**
      * BaseContext constructor.
      */
-    public function __construct(ResponseWriter $writer, Request $request)
+    public function __construct(ResponseWriter $writer, Request $request, Engine $engine = null)
     {
         $this->writer = $writer;
         $this->request = $request;
+        $this->engine = $engine;
     }
 
     /**
@@ -93,33 +97,15 @@ final class BaseContext implements Context
     /**
      * {@inheritDoc}
      */
-    public function header(string $name, string $value): void
-    {
-        $this->writer->getHeaders()->add($name, $value);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function view(string $template, array $context = [], int $status = STATUS_OK): void
     {
-        throw new \RuntimeException(sprintf(
-            'Class %s lacks view support. Use %s middleware',
-            __CLASS__,
-            TemplateSupport::class
-        ));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function file(string $path, string $name = null, int $status = STATUS_OK): void
-    {
-        throw new \RuntimeException(sprintf(
-            'Class %s lacks file support. Use %s middleware',
-            __CLASS__,
-            LocalFileSupport::class
-        ));
+        if (null === $this->engine) {
+            throw new \RuntimeException('There is no configured template engine');
+        }
+        $view = $this->engine->render($template, $context);
+        $this->writer->getHeaders()->add('Content-Type', 'text/html');
+        $this->writer->writeHeaders($status);
+        $view->writeTo($this->writer);
     }
 
     /**

@@ -42,11 +42,6 @@ interface Context
     public function html(string $html, int $status = STATUS_OK): void;
 
     /**
-     * Adds a header.
-     */
-    public function header(string $name, string $value): void;
-
-    /**
      * Writes a json response to the underlying connection.
      *
      * @param mixed $data
@@ -68,15 +63,6 @@ interface Context
      * @throws Io\Error if the writing operation fails
      */
     public function text(string $text, int $status = STATUS_OK): void;
-
-    /**
-     * Writes a file response to the underlying connection.
-     *
-     * If a $name name is passed, then the file sent as an attachment (download).
-     *
-     * @throws Io\Error if the writing operation fails
-     */
-    public function file(string $path, string $name = null, int $status = STATUS_OK): void;
 
     /**
      * Writes a redirect response to the underlying connection.

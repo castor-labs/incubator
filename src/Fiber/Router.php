@@ -33,7 +33,7 @@ use Castor\Net\Http\ResponseWriter;
  */
 class Router implements Http\Handler, Handler
 {
-    private Handler $fallback;
+    private Config $config;
     /**
      * @var array|Middleware[]
      */
@@ -42,9 +42,9 @@ class Router implements Http\Handler, Handler
     /**
      * Router constructor.
      */
-    public function __construct(Handler $fallback)
+    public function __construct(Config $config)
     {
-        $this->fallback = $fallback;
+        $this->config = $config;
         $this->middleware = [];
     }
 
@@ -53,7 +53,7 @@ class Router implements Http\Handler, Handler
      */
     public static function create(): Router
     {
-        return new self(new EndRouting());
+        return new self(new Config());
     }
 
     /**
@@ -156,7 +156,7 @@ class Router implements Http\Handler, Handler
      */
     public function group(string $path): Router
     {
-        $router = self::create();
+        $router = new Router($this->config);
         $this->mount($path, $router);
 
         return $router;
@@ -167,7 +167,10 @@ class Router implements Http\Handler, Handler
      */
     public function handle(Context $ctx): void
     {
-        $stack = HandlerMiddleware::stack($this->fallback, ...$this->middleware);
+        $stack = HandlerMiddleware::stack(
+            $this->config->fallback ?? new EndRouting(),
+            ...$this->middleware
+        );
         $stack->handle($ctx);
     }
 
@@ -177,7 +180,7 @@ class Router implements Http\Handler, Handler
      */
     public function handleHTTP(Http\ResponseWriter $writer, Http\Request $request): void
     {
-        $context = new BaseContext($writer, $request);
+        $context = new DefaultContext($writer, $request, $this->config->engine);
         $this->handle($context);
     }
 }
