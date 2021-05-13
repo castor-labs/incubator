@@ -42,7 +42,7 @@ class Str implements Stringable
     }
 
     /**
-     * @return $this
+     * @return static
      */
     public static function make(string $str): Str
     {
@@ -145,7 +145,7 @@ class Str implements Stringable
     public function match(string $pattern): Arr
     {
         $matches = [];
-        preg_match('/'.$pattern.'/', $this->string, $matches);
+        preg_match($pattern, $this->string, $matches);
 
         return Arr::fromArray($matches);
     }

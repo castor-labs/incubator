@@ -49,11 +49,11 @@ final class ServeStatic implements Handler
         $context = $request->getContext();
         $path = $context->get('_router.path') ?? $request->getUri()->getPath();
 
-        $filename = $this->path->join($path->toFsPath()->toStr())->toStr();
-        if (!Os\File::exists($filename)) {
+        $filename = $this->path->join($path->toOsPath()->toStr());
+        if (!$filename->isFile()) {
             throw new Http\ProtocolError(Http\STATUS_NOT_FOUND, sprintf('File %s does not exists', $path));
         }
-        $file = Os\File::open($filename);
+        $file = Os\File::open($filename->toStr());
         $ctx->getWriter()->getHeaders()->add('Content-Type', $file->getContentType());
         $ctx->getWriter()->getHeaders()->add('Content-Length', (string) $file->getSize());
         $file->writeTo($ctx->getWriter());

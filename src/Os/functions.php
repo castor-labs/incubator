@@ -15,11 +15,10 @@ declare(strict_types=1);
 
 namespace Castor\Os;
 
-use Castor\Io;
 use Traversable;
 
 /**
- * @throws Io\Error
+ * @psalm-return Traversable<Path>
  */
 function glob(string $pattern, int $flags = 0): Traversable
 {
@@ -28,11 +27,6 @@ function glob(string $pattern, int $flags = 0): Traversable
         throw new \InvalidArgumentException('Invalid glob pattern provided');
     }
     foreach ($arr as $path) {
-        if (Directory::exists($path)) {
-            yield Directory::open($path);
-
-            continue;
-        }
-        yield File::open($path);
+        yield Path::make($path);
     }
 }

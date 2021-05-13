@@ -57,7 +57,7 @@ class Path extends Str
         return $clone;
     }
 
-    public function toFsPath(): Os\Path
+    public function toOsPath(): Os\Path
     {
         return Os\Path::fromUriPath($this);
     }

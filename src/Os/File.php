@@ -47,17 +47,13 @@ class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, I
      */
     public static function open(string $path): File
     {
-        if (!is_file($path)) {
+        $osPath = Path::make($path);
+        if (!$osPath->isFile()) {
             throw new Io\Error('File does not exist');
         }
-        $resource = fopen($path, 'r+b');
+        $resource = fopen($osPath->toStr(), 'r+b');
 
-        return new self($resource, Path::make($path));
-    }
-
-    public static function exists(string $path): bool
-    {
-        return is_file($path);
+        return new self($resource, $osPath);
     }
 
     /**
@@ -65,9 +61,10 @@ class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, I
      */
     public static function put(string $path): File
     {
+        $osPath = Path::make($path);
         $resource = fopen($path, 'w+b');
 
-        return new self($resource, Path::make($path));
+        return new self($resource, $osPath);
     }
 
     /**
@@ -75,12 +72,14 @@ class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, I
      */
     public static function make(string $path): File
     {
-        if (is_file($path)) {
+        $osPath = Path::make($path);
+
+        if ($osPath->isFile()) {
             throw new Io\Error('File already exists');
         }
-        $resource = fopen($path, 'x+b');
+        $resource = fopen($osPath->toStr(), 'x+b');
 
-        return new self($resource, Path::make($path));
+        return new self($resource, $osPath);
     }
 
     /**

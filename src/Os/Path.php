@@ -31,16 +31,6 @@ class Path extends Str
     }
 
     /**
-     * @return $this
-     */
-    public static function make(string $str): Str
-    {
-        $path = new static($str);
-
-        return $path->replace(Uri\Path::SEPARATOR, self::SEPARATOR);
-    }
-
-    /**
      * @param string ...$parts
      */
     public function join(string ...$parts): Path
@@ -63,9 +53,9 @@ class Path extends Str
         return file_exists($this->string);
     }
 
-    public function getBasename(): string
+    public function getBasename(string $suffix = ''): string
     {
-        return pathinfo($this->string, PATHINFO_BASENAME);
+        return basename($this->string, $suffix);
     }
 
     public function getExtension(): string
@@ -76,6 +66,21 @@ class Path extends Str
     public function getFilename(): string
     {
         return pathinfo($this->string, PATHINFO_FILENAME);
+    }
+
+    public function isAbsolute(): bool
+    {
+        return self::SEPARATOR === $this->string[0] || !$this->match('/^[a-zA-Z]\:[\/,\\\\].{1,}/')->isEmpty();
+    }
+
+    public function isFile(): bool
+    {
+        return is_file($this->string);
+    }
+
+    public function isDirectory(): bool
+    {
+        return is_dir($this->string);
     }
 
     public function getDirname(): string

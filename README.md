@@ -12,6 +12,59 @@ composer require castor/incubator dev-main
 
 ## Documentation
 
+### `Io` Package
+
+The `Castor\Io` namespace contains mostly interfaces to deal with input
+output operations. These interfaces are directly ported from Golang's 
+standard library.
+
+The most notable interfaces are `Castor\Io\Reader` and `Castor\Io\Writer`.
+Many of the classes of this composer package implement them, like the
+`Castor\Os\File`. 
+
+### `Os` Package
+
+The `Castor\Os` namespace contains classes to perform operations in the
+underlying operating system, like reading files, directories, working
+with paths and environment variables.
+
+For example, to work with files:
+
+```php
+<?php
+
+// Opens a file. Fails if the file does not exist
+$file = Castor\Os\File::open('/some/file/in/the/local/filesystem');
+
+// Opens a file and overwrites it if exists. Otherwise it creates it.
+// It fails if the file cannot be created.
+$file = Castor\Os\File::put('/some/file/in/the/local/filesystem');
+
+// Creates a file. Fails if the file already exists.
+$file = Castor\Os\File::make('/some/file/in/the/local/filesystem');
+```
+
+By default, `Castor\Os\File` implements both `Castor\Io\Reader` and
+`Castor\Io\Writer`, which means you can write and/or read from it, and 
+use it as an argument whenever either type is required.
+
+The `Castor\Os\File` provides a useful api to work with files.
+
+```php
+<?php
+
+// Opens a file. Fails if the file does not exist
+$file = Castor\Os\File::open('/some/file.pdf');
+
+echo $file->getSize();                  // Prints "34232" 
+echo $file->getContentType();           // Prints "application/pdf"
+echo $file->getPath()->getFilename();   // Prints "file.pdf"
+echo $file->getPath()->getBasename();   // Prints "file"
+echo $file->getPath()->getDirname();    // Prints "/some"
+echo $file->getPath()->getExtension();  // Prints "pdf"
+echo $file->getPath()->isAbsolute();    // Prints "true"
+```
+
 ### Http
 
 In the `Net\Http` namespace you'll find an incomplete implementation of

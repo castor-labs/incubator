@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Castor\Os;
 
-use Castor\Io;
 use InvalidArgumentException;
 use IteratorAggregate;
 use RuntimeException;
@@ -26,55 +25,69 @@ use Traversable;
  */
 class Directory implements IteratorAggregate
 {
-    private string $path;
+    /**
+     * @var resource
+     */
+    private $resource;
+    private Path $path;
 
     /**
      * Directory constructor.
+     *
+     * @param resource $resource
      */
-    protected function __construct(string $path)
+    protected function __construct($resource, Path $path)
     {
+        $this->resource = $resource;
         $this->path = $path;
     }
 
     public static function open(string $path): Directory
     {
-        if (!self::exists($path)) {
+        $osPath = Path::make($path);
+        if (!$osPath->isDirectory()) {
             throw new InvalidArgumentException(sprintf('Path %s is not a directory', $path));
         }
 
-        return new self($path);
+        $resource = opendir($osPath->toStr());
+
+        return new self($resource, $osPath);
     }
 
-    public static function exists(string $path): bool
+    public static function make(string $path, int $mode = 0777, bool $recursive = true): Directory
     {
-        return is_dir($path);
+        if (!mkdir($path, $mode, $recursive) && !is_dir($path)) {
+            throw new RuntimeException('Could not create directory');
+        }
+
+        return static::open($path);
     }
 
-    public static function ensure(string $path, int $mode = 0777, bool $recursive = true): Directory
+    public static function put(string $path, int $mode = 0777, bool $recursive = true): Directory
     {
+        if (is_dir($path)) {
+            return static::open($path);
+        }
         if (!is_dir($path) && !mkdir($path, $mode, $recursive) && !is_dir($path)) {
             throw new RuntimeException('Could not create directory');
         }
 
-        return new self($path);
+        return static::make($path);
     }
 
-    /**
-     * @throws Io\Error
-     */
     public function getIterator(): Traversable
     {
-        $paths = scandir($this->path);
-        if (!is_array($paths)) {
-            throw new RuntimeException('Invalid directory provided');
-        }
-        foreach ($paths as $path) {
-            if (self::exists($path)) {
-                yield self::open($path);
+        while (true) {
+            $path = readdir($this->resource);
+            if (!is_string($path)) {
+                break;
+            }
+            if ('.' === $path) {
+                yield clone $this->path;
 
                 continue;
             }
-            yield File::open($path);
+            yield $this->path->join($path);
         }
     }
 }
