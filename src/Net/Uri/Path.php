@@ -31,4 +31,9 @@ class Path extends Str
 
         return self::make(implode('/', $parts));
     }
+
+    public function toFsPath(): string
+    {
+        return $this->replace('/', DIRECTORY_SEPARATOR)->toStr();
+    }
 }

@@ -31,4 +31,9 @@ class ProtocolError extends \Exception
     {
         parent::__construct($message, $status, $previous);
     }
+
+    public function isCode(int $code): bool
+    {
+        return $this->code === $code;
+    }
 }

@@ -69,7 +69,7 @@ class Str implements Stringable
 
     public function extract(int $offset, int $length = null): Str
     {
-        return self::make(substr($this->string, $offset, $length));
+        return static::make(substr($this->string, $offset, $length));
     }
 
     public function contains(string $substring): bool
@@ -82,7 +82,19 @@ class Str implements Stringable
      */
     public function replace(string $search, string $replacement): Str
     {
-        return Str::make(str_replace($search, $replacement, $this->string));
+        return static::make(str_replace($search, $replacement, $this->string));
+    }
+
+    public function slice(int $offset, int $length = null): Str
+    {
+        $length = $length ?? ($this->length() - $offset);
+
+        return static::make(substr($this->string, $offset, $length));
+    }
+
+    public function toStr(): string
+    {
+        return (string) $this;
     }
 
     /**
@@ -127,5 +139,10 @@ class Str implements Stringable
     public function isEmpty(): bool
     {
         return '' === $this->string;
+    }
+
+    public function length(): int
+    {
+        return strlen($this->string);
     }
 }

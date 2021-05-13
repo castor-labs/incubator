@@ -15,10 +15,15 @@ declare(strict_types=1);
 
 namespace Castor\Fiber;
 
+use Castor\Net\Http;
+
 /**
  * Interface Handler.
  */
 interface Handler
 {
+    /**
+     * @throws Http\ProtocolError when an error occurs
+     */
     public function handle(Context $ctx): void;
 }

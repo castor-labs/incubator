@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Castor\Fiber;
 
+use Castor\Net\Http;
 use MNC\PathToRegExpPHP\NoMatchException;
 use MNC\PathToRegExpPHP\PathRegExp;
 use MNC\PathToRegExpPHP\PathRegExpFactory;
@@ -41,6 +42,9 @@ class Path implements Middleware
         return new self(PathRegExpFactory::create($path, 0), $handler);
     }
 
+    /**
+     * @throws Http\ProtocolError
+     */
     public function process(Context $ctx, Stack $stack): void
     {
         $request = $ctx->getRequest();

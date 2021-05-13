@@ -17,11 +17,12 @@ namespace Castor\Fiber;
 
 use Castor\Fs\File;
 use Castor\Io\Error;
+use Castor\Net\Http;
 
 /**
  * Class StaticPath.
  */
-final class ServeStatic implements Middleware
+final class ServeStatic implements Handler
 {
     private string $path;
 
@@ -40,14 +41,17 @@ final class ServeStatic implements Middleware
 
     /**
      * @throws Error
+     * @throws Http\ProtocolError
      */
-    public function process(Context $ctx, Stack $stack): void
+    public function handle(Context $ctx): void
     {
-        $filename = $this->path.$ctx->getRequest()->getUri()->getPath();
-        if (!File::exists($filename)) {
-            $stack->next()->handle($ctx);
+        $request = $ctx->getRequest();
+        $context = $request->getContext();
+        $path = $context->get('_router.path') ?? $request->getUri()->getPath();
 
-            return;
+        $filename = $this->path.DIRECTORY_SEPARATOR.$path->toFsPath();
+        if (!File::exists($filename)) {
+            throw new Http\ProtocolError(Http\STATUS_NOT_FOUND, sprintf('File %s does not exists', $path));
         }
         $file = File::open($filename);
         $ctx->getWriter()->getHeaders()->add('Content-Type', $file->getContentType());
