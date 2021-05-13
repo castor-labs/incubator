@@ -17,10 +17,10 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 $path = __DIR__.'/hello.txt';
 
-if (!Castor\Fs\File::exists($path)) {
-    $file = Castor\Fs\File::make($path);
+if (!Castor\Os\File::exists($path)) {
+    $file = Castor\Os\File::make($path);
 } else {
-    $file = Castor\Fs\File::open($path);
+    $file = Castor\Os\File::open($path);
     $file->seek(0, Castor\Io\Seeker::END);
 }
 $file->write("This is some text\n");

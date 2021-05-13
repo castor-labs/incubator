@@ -96,7 +96,7 @@ class Uri
     public static function join(Uri $uri, string ...$parts): Uri
     {
         $clone = clone $uri;
-        $clone->path = $clone->path->merge(...$parts);
+        $clone->path = $clone->path->join(...$parts);
 
         return $clone;
     }

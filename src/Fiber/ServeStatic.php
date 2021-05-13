@@ -15,28 +15,28 @@ declare(strict_types=1);
 
 namespace Castor\Fiber;
 
-use Castor\Fs\File;
 use Castor\Io\Error;
 use Castor\Net\Http;
+use Castor\Os;
 
 /**
  * Class StaticPath.
  */
 final class ServeStatic implements Handler
 {
-    private string $path;
+    private Os\Path $path;
 
     /**
      * ServeStatic constructor.
      */
-    public function __construct(string $path)
+    public function __construct(Os\Path $path)
     {
         $this->path = $path;
     }
 
     public static function from(string $path): ServeStatic
     {
-        return new self($path);
+        return new self(Os\Path::make($path));
     }
 
     /**
@@ -49,11 +49,11 @@ final class ServeStatic implements Handler
         $context = $request->getContext();
         $path = $context->get('_router.path') ?? $request->getUri()->getPath();
 
-        $filename = $this->path.DIRECTORY_SEPARATOR.$path->toFsPath();
-        if (!File::exists($filename)) {
+        $filename = $this->path->join($path->toFsPath()->toStr())->toStr();
+        if (!Os\File::exists($filename)) {
             throw new Http\ProtocolError(Http\STATUS_NOT_FOUND, sprintf('File %s does not exists', $path));
         }
-        $file = File::open($filename);
+        $file = Os\File::open($filename);
         $ctx->getWriter()->getHeaders()->add('Content-Type', $file->getContentType());
         $ctx->getWriter()->getHeaders()->add('Content-Length', (string) $file->getSize());
         $file->writeTo($ctx->getWriter());

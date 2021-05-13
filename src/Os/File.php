@@ -13,7 +13,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Castor\Fs;
+namespace Castor\Os;
 
 use Castor\Io;
 use Castor\Mime\DefaultRegistry;
@@ -24,8 +24,7 @@ use Castor\Mime\DefaultRegistry;
 class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, Io\WriterTo
 {
     use Io\ResourceHelper;
-
-    private string $path;
+    private Path $path;
 
     /**
      * File constructor.
@@ -34,7 +33,7 @@ class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, I
      *
      * @throws Io\Error
      */
-    protected function __construct($resource, string $path)
+    protected function __construct($resource, Path $path)
     {
         $this->setResource($resource);
         if (!stream_is_local($this->resource)) {
@@ -53,7 +52,7 @@ class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, I
         }
         $resource = fopen($path, 'r+b');
 
-        return new self($resource, $path);
+        return new self($resource, Path::make($path));
     }
 
     public static function exists(string $path): bool
@@ -68,7 +67,7 @@ class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, I
     {
         $resource = fopen($path, 'w+b');
 
-        return new self($resource, $path);
+        return new self($resource, Path::make($path));
     }
 
     /**
@@ -81,7 +80,7 @@ class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, I
         }
         $resource = fopen($path, 'x+b');
 
-        return new self($resource, $path);
+        return new self($resource, Path::make($path));
     }
 
     /**
@@ -134,16 +133,16 @@ class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, I
 
     public function getSize(): int
     {
-        return filesize($this->path);
+        return filesize($this->path->toStr());
     }
 
-    public function getExtension(): string
+    public function getPath(): Path
     {
-        return pathinfo($this->path, PATHINFO_EXTENSION);
+        return $this->path;
     }
 
     public function getContentType(): string
     {
-        return DefaultRegistry::get()->getMimeType($this->getExtension()) ?? 'application/octet-stream';
+        return DefaultRegistry::get()->getMimeType($this->path->getExtension()) ?? 'application/octet-stream';
     }
 }

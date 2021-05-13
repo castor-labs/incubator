@@ -13,35 +13,31 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Castor\Net\Uri;
+namespace Castor\Os;
 
-use Castor\Os;
+use Castor\Net\Uri;
 use Castor\Str;
 
 /**
- * Class Path represents hierarchical paths separated with forward
- * slashes ("/") like those founds in uris.
- *
- * It does not handle paths of operating systems. For that you must use the
- * Os\Path class.
+ * Class Path represents an operating system path.
  */
 class Path extends Str
 {
-    public const SEPARATOR = '/';
+    public const SEPARATOR = DIRECTORY_SEPARATOR;
 
-    public static function fromOsPath(Os\Path $path): Path
+    public static function fromUriPath(Uri\Path $path): Path
     {
-        return new static($path->replace(Os\Path::SEPARATOR, self::SEPARATOR)->toStr());
+        return new static($path->replace(Uri\Path::SEPARATOR, self::SEPARATOR)->toStr());
     }
 
     /**
-     * @return static
+     * @return $this
      */
     public static function make(string $str): Str
     {
         $path = new static($str);
 
-        return $path->replace(Os\Path::SEPARATOR, self::SEPARATOR);
+        return $path->replace(Uri\Path::SEPARATOR, self::SEPARATOR);
     }
 
     /**
@@ -57,9 +53,14 @@ class Path extends Str
         return $clone;
     }
 
-    public function toFsPath(): Os\Path
+    public function toUriPath(): Uri\Path
     {
-        return Os\Path::fromUriPath($this);
+        return Uri\Path::fromOsPath($this);
+    }
+
+    public function exists(): bool
+    {
+        return file_exists($this->string);
     }
 
     public function getBasename(): string

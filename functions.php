@@ -18,4 +18,4 @@ require_once __DIR__.'/src/Net/functions.php';
 require_once __DIR__.'/src/Net/Dns/functions.php';
 require_once __DIR__.'/src/Net/Http/functions.php';
 require_once __DIR__.'/src/Net/Http/Cgi/functions.php';
-require_once __DIR__.'/src/Fs/functions.php';
+require_once __DIR__.'/src/Os/functions.php';
