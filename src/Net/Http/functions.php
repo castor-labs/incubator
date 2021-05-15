@@ -100,3 +100,10 @@ function stack(Handler $handler, callable ...$factories): Handler
         $handler,
     );
 }
+
+function setCookie(ResponseWriter $writer, Cookie ...$cookies): void
+{
+    foreach ($cookies as $cookie) {
+        $writer->getHeaders()->add('Set-Cookie', $cookie->toHttpString());
+    }
+}

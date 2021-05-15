@@ -18,6 +18,7 @@ namespace Castor\Fiber;
 use Castor\Io;
 use Castor\Net\Http;
 use const Castor\Net\Http\STATUS_OK;
+use InvalidArgumentException;
 
 /**
  * Class Context.
@@ -56,6 +57,17 @@ interface Context
      * @throws Io\Error if the writing operation fails
      */
     public function view(string $template, array $context = [], int $status = STATUS_OK): void;
+
+    /**
+     * Sends a file to the client.
+     *
+     * If $downloadName is provided, the file will be sent as an attachment.
+     *
+     * If $downloadName is an empty string, then the filename of the provided path will be used.
+     *
+     * @throws InvalidArgumentException if the $path provided is not a file
+     */
+    public function file(string $path, string $downloadName = null, int $status = STATUS_OK): void;
 
     /**
      * Writes a plain text response to the underlying connection.

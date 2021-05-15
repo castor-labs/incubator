@@ -23,6 +23,8 @@ use Castor\Net\Uri;
  */
 class Request
 {
+    protected const COOKIES_ATTR = '_COOKIES';
+
     private string $method;
     private Uri $uri;
     private Protocol $protocol;
@@ -73,8 +75,32 @@ class Request
         return $this->body;
     }
 
+    public function getCookies(): array
+    {
+        return $this->context->get(self::COOKIES_ATTR) ?? [];
+    }
+
+    public function getCookie(string $name): ?string
+    {
+        return $this->context->get(self::COOKIES_ATTR)[$name] ?? null;
+    }
+
     public function getContext(): Context
     {
         return $this->context;
+    }
+
+    private function parseCookies(): void
+    {
+        if (!$this->context->has(self::COOKIES_ATTR)) {
+            $cookies = [];
+            $cookieHeader = $this->headers->read('Cookie') ?? '';
+            $cookiesStr = explode(';', $cookieHeader);
+            foreach ($cookiesStr as $cookieStr) {
+                [$name, $value] = explode('=', $cookieStr, 2);
+                $cookies[trim($name, ' ')] = trim($value, ' "');
+            }
+            $this->context->put(self::COOKIES_ATTR, $cookies);
+        }
     }
 }

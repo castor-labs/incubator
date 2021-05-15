@@ -18,10 +18,49 @@ namespace Castor\Net\Http;
 /**
  * Class SameSite.
  */
-class SameSite
+class SameSite implements \Stringable
 {
-    public const DEFAULT = self::LAX;
-    public const STRICT = 'strict';
-    public const LAX = 'lax';
-    public const NONE = 'none';
+    public const STRICT = 'Strict';
+    public const LAX = 'Lax';
+    public const NONE = 'None';
+
+    public string $value;
+
+    /**
+     * SameSite constructor.
+     */
+    private function __construct(string $value)
+    {
+        $this->value = $value;
+    }
+
+    public function __toString(): string
+    {
+        return $this->toStr();
+    }
+
+    public static function lax(): SameSite
+    {
+        return new self(self::LAX);
+    }
+
+    public static function strict(): SameSite
+    {
+        return new self(self::STRICT);
+    }
+
+    public static function none(): SameSite
+    {
+        return new self(self::NONE);
+    }
+
+    public function equals(SameSite $sameSite): bool
+    {
+        return $this->value === $sameSite->value;
+    }
+
+    public function toStr(): string
+    {
+        return $this->value;
+    }
 }

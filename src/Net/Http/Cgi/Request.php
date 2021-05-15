@@ -30,6 +30,8 @@ use Castor\Net\Http;
  */
 final class Request extends Http\Request
 {
+    private const SERVER_ATTR = '_SERVER';
+
     /**
      * Creates a Request from PHP CGI Globals.
      */
@@ -49,7 +51,15 @@ final class Request extends Http\Request
         $uri = Uri::marshalFromSapi($server, $headers->toMap());
         $protocol = self::marshalProtocolFromSapi($server);
 
-        return new self($method, $uri, $protocol, $headers, $body, new Http\Context(['_server' => $_SERVER]));
+        return new self($method, $uri, $protocol, $headers, $body, new Http\Context([
+            self::SERVER_ATTR => $_SERVER,
+            self::COOKIES_ATTR => $_COOKIE, // No need to parse the cookies if the CGI api did it for us already
+        ]));
+    }
+
+    public function getServerParams(): array
+    {
+        return $this->getContext()->get(self::SERVER_ATTR) ?? [];
     }
 
     private static function normalizeServer(array $server, callable $apacheRequestHeaderCallback = null): array

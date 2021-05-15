@@ -15,12 +15,11 @@ declare(strict_types=1);
 
 namespace Castor\Fiber;
 
-use Castor\Net\Http\Request;
-use Castor\Net\Http\ResponseWriter;
-use const Castor\Net\Http\STATUS_FOUND;
-use const Castor\Net\Http\STATUS_OK;
-use Castor\Template\Engine;
-use Castor\Template\PhpEngine;
+use Castor\Io;
+use Castor\Net\Http;
+use Castor\Os;
+use Castor\Template;
+use InvalidArgumentException;
 use JsonException;
 
 /**
@@ -28,14 +27,14 @@ use JsonException;
  */
 final class DefaultContext implements Context
 {
-    private ResponseWriter $writer;
-    private Request $request;
-    private ?PhpEngine $engine;
+    private Http\ResponseWriter $writer;
+    private Http\Request $request;
+    private ?Template\PhpEngine $engine;
 
     /**
      * BaseContext constructor.
      */
-    public function __construct(ResponseWriter $writer, Request $request, Engine $engine = null)
+    public function __construct(Http\ResponseWriter $writer, Http\Request $request, Template\Engine $engine = null)
     {
         $this->writer = $writer;
         $this->request = $request;
@@ -45,7 +44,7 @@ final class DefaultContext implements Context
     /**
      * {@inheritDoc}
      */
-    public function getWriter(): ResponseWriter
+    public function getWriter(): Http\ResponseWriter
     {
         return $this->writer;
     }
@@ -53,7 +52,7 @@ final class DefaultContext implements Context
     /**
      * {@inheritDoc}
      */
-    public function getRequest(): Request
+    public function getRequest(): Http\Request
     {
         return $this->request;
     }
@@ -61,7 +60,7 @@ final class DefaultContext implements Context
     /**
      * {@inheritDoc}
      */
-    public function html(string $html, int $status = STATUS_OK): void
+    public function html(string $html, int $status = Http\STATUS_OK): void
     {
         $this->writer->getHeaders()->add('Content-Type', 'text/html');
         $this->writer->getHeaders()->add('Content-Length', (string) strlen($html));
@@ -74,7 +73,7 @@ final class DefaultContext implements Context
      *
      * @throws JsonException if $data cannot be encoded into json
      */
-    public function json($data, array $context = [], int $status = STATUS_OK): void
+    public function json($data, array $context = [], int $status = Http\STATUS_OK): void
     {
         $json = json_encode($data, JSON_THROW_ON_ERROR);
         $this->writer->getHeaders()->add('Content-Type', 'application/json');
@@ -86,7 +85,7 @@ final class DefaultContext implements Context
     /**
      * {@inheritDoc}
      */
-    public function text(string $text, int $status = STATUS_OK): void
+    public function text(string $text, int $status = Http\STATUS_OK): void
     {
         $this->writer->getHeaders()->add('Content-Type', 'text/plain');
         $this->writer->getHeaders()->add('Content-Length', (string) strlen($text));
@@ -95,9 +94,30 @@ final class DefaultContext implements Context
     }
 
     /**
+     * @throws Io\Error
+     */
+    public function file(string $path, string $downloadName = null, int $status = Http\STATUS_OK): void
+    {
+        $osPath = Os\Path::make($path);
+        if (!$osPath->isFile()) {
+            throw new InvalidArgumentException('File %s does not exist');
+        }
+        $file = Os\File::open($path);
+        $this->writer->getHeaders()->add('Content-Type', $file->getContentType());
+        $this->writer->getHeaders()->add('Content-Length', (string) $file->getSize());
+        if ('' === $downloadName) {
+            $downloadName = $file->getPath()->getFilename();
+        }
+        if (null !== $downloadName) {
+            $this->writer->getHeaders()->add('Content-Disposition', sprintf('attachment; filename="%s"', $downloadName));
+        }
+        $file->writeTo($this->writer);
+    }
+
+    /**
      * {@inheritDoc}
      */
-    public function view(string $template, array $context = [], int $status = STATUS_OK): void
+    public function view(string $template, array $context = [], int $status = Http\STATUS_OK): void
     {
         if (null === $this->engine) {
             throw new \RuntimeException('There is no configured template engine');
@@ -114,7 +134,6 @@ final class DefaultContext implements Context
     public function redirect(string $uri): void
     {
         $this->writer->getHeaders()->add('Location', $uri);
-        $this->writer->writeHeaders(STATUS_FOUND);
-        $this->writer->write('');
+        $this->writer->writeHeaders(Http\STATUS_FOUND);
     }
 }

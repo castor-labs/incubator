@@ -19,6 +19,8 @@ use Castor\Io\ReadCloser;
 
 /**
  * Class Response.
+ *
+ * @internal
  */
 class Response
 {
