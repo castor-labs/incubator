@@ -41,6 +41,21 @@ interface Context
     public function getRequest(): Http\Request;
 
     /**
+     * Returns an specific routing param.
+     */
+    public function getParam(string $name): ?string;
+
+    /**
+     * Returns the routing params as an array.
+     */
+    public function getParams(): array;
+
+    /**
+     * Returns the parsed body as an array.
+     */
+    public function getParsedBody(): array;
+
+    /**
      * Writes an html response to the underlying connection.
      *
      * @throws Io\Error if the writing operation fails
@@ -73,12 +88,6 @@ interface Context
      * @throws InvalidArgumentException if the $path provided is not a file
      */
     public function file(string $path, string $downloadName = null, int $status = STATUS_OK): void;
-
-    public function getParam(string $name): ?string;
-
-    public function getParams(): array;
-
-    public function getParsedBody(): array;
 
     /**
      * Writes a plain text response to the underlying connection.
