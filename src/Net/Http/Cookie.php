@@ -63,6 +63,51 @@ class Cookie
         return new self($name, $value);
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getValue(): string
+    {
+        return $this->value;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    public function getDomain(): string
+    {
+        return $this->domain;
+    }
+
+    public function getExpires(): ?Instant
+    {
+        return $this->expires;
+    }
+
+    public function getSameSite(): ?SameSite
+    {
+        return $this->sameSite;
+    }
+
+    public function getMaxAge(): ?int
+    {
+        return $this->maxAge;
+    }
+
+    public function isSecure(): bool
+    {
+        return $this->secure;
+    }
+
+    public function isHttpOnly(): bool
+    {
+        return $this->httpOnly;
+    }
+
     public function secure(): Cookie
     {
         $clone = clone $this;
@@ -115,6 +160,14 @@ class Cookie
     {
         $clone = clone $this;
         $clone->expires = $expires;
+
+        return $clone;
+    }
+
+    public function withValue(string $value): Cookie
+    {
+        $clone = clone $this;
+        $clone->value = $value;
 
         return $clone;
     }
