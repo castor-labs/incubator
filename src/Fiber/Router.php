@@ -188,6 +188,7 @@ class Router implements Http\Handler, Handler
      */
     public function handleHTTP(Http\ResponseWriter $writer, Http\Request $request): void
     {
+        $writer->getHeaders()->add('Server', $this->config->server);
         $context = new DefaultContext($writer, $request, $this->config->engine);
         $this->handle($context);
     }

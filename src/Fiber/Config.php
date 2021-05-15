@@ -24,4 +24,5 @@ class Config
 {
     public ?Handler $fallback = null;
     public ?Engine $engine = null;
+    public string $server = 'Fiber';
 }

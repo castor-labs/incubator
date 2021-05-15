@@ -14,7 +14,7 @@ declare(strict_types=1);
  */
 
 use Castor\Fiber\Context;
-use Castor\Fiber\HandlerFunc;
+use Castor\Fiber\ClosureHandler;
 use Castor\Fiber\PlainTextErrorHandler;
 use Castor\Fiber\Router;
 
@@ -29,18 +29,19 @@ function hello(Context $ctx): void
     ]);
 }
 
-function greet(Context $ctx): void
+function greet(Context $ctx, string $name = null): void
 {
+    $name = $name ?? 'Person';
     $ctx->json([
-        'message' => sprintf('Hello %s!', $ctx->getParam('name') ?? 'Person'),
+        'message' => sprintf('Hello %s!', $name),
     ]);
 }
 
 $router = Router::create()
     ->use(new PlainTextErrorHandler())
     ->statics('/', __DIR__.'/static')
-    ->get('/', HandlerFunc::make('hello'))
-    ->get('/greet/:name?', HandlerFunc::make('greet'))
+    ->get('/', ClosureHandler::make('hello'))
+    ->get('/greet/:name?', ClosureHandler::reflect('greet'))
 ;
 
 Castor\Net\Http\Cgi\serve($router);
