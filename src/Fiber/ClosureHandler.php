@@ -95,6 +95,7 @@ final class ClosureHandler implements Handler
 
     /**
      * @psalm-suppress UndefinedMethod
+     *
      * @throws ReflectionException
      *
      * @return mixed

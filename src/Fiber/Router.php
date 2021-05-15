@@ -56,6 +56,11 @@ class Router implements Http\Handler, Handler
         return new self(new Config());
     }
 
+    public static function from(Router $router): Router
+    {
+        return new self($router->config);
+    }
+
     /**
      * Register a middleware into the stack.
      */
