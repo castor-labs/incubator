@@ -29,7 +29,7 @@ final class EndRouting implements Handler
      */
     public function handle(Context $ctx): void
     {
-        $allowedMethods = $ctx->getRequest()->getContext()->get('_router.allowed_methods') ?? [];
+        $allowedMethods = $ctx->getRequest()->getContext()->get(Context::ALLOWED_METHODS_ATTR) ?? [];
         if ([] === $allowedMethods) {
             throw new ProtocolError(
                 STATUS_NOT_FOUND,
