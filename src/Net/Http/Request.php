@@ -82,7 +82,7 @@ class Request
 
     public function getCookie(string $name): ?string
     {
-        return $this->context->get(self::COOKIES_ATTR)[$name] ?? null;
+        return $this->getCookies()[$name] ?? null;
     }
 
     public function getContext(): Context

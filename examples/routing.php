@@ -29,10 +29,18 @@ function hello(Context $ctx): void
     ]);
 }
 
+function greet(Context $ctx): void
+{
+    $ctx->json([
+        'message' => sprintf('Hello %s!', $ctx->getParam('name') ?? 'Person'),
+    ]);
+}
+
 $router = Router::create()
     ->use(new PlainTextErrorHandler())
     ->statics('/', __DIR__.'/static')
     ->get('/', HandlerFunc::make('hello'))
+    ->get('/greet/:name?', HandlerFunc::make('greet'))
 ;
 
 Castor\Net\Http\Cgi\serve($router);

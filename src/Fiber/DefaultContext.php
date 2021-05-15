@@ -41,6 +41,16 @@ final class DefaultContext implements Context
         $this->engine = $engine;
     }
 
+    public function getParam(string $name): ?string
+    {
+        return $this->getParams()[$name] ?? null;
+    }
+
+    public function getParams(): array
+    {
+        return $this->request->getContext()->get(self::PARAMS_ATTR) ?? [];
+    }
+
     /**
      * {@inheritDoc}
      */

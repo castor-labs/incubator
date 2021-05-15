@@ -51,7 +51,7 @@ class Path implements Middleware
         $context = $request->getContext();
 
         try {
-            $path = $context->get('_router.path') ?? $request->getUri()->getPath();
+            $path = $context->get(Context::PATH_ATTR) ?? $request->getUri()->getPath();
             $result = $this->regExp->match((string) $path);
         } catch (NoMatchException $e) {
             $stack->next()->handle($ctx);
@@ -59,10 +59,11 @@ class Path implements Middleware
             return;
         }
 
-        $context->put('_router.path', $path->replace($result->getMatchedString(), ''));
-        foreach ($result->getValues() as $key => $value) {
-            $context->put($key, $value);
-        }
+        $context->put(Context::PATH_ATTR, $path->replace($result->getMatchedString(), ''));
+        $context->put(Context::PARAMS_ATTR, array_merge(
+            $ctx->getParams(),
+            $result->getValues()
+        ));
 
         $this->handler->handle($ctx);
     }

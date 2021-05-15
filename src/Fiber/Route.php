@@ -57,17 +57,18 @@ class Route implements Middleware
             return;
         }
         if (!$this->methodMatches($request->getMethod())) {
-            $methods = $context->get('_router.allowed_methods') ?? [];
-            $context->put('_router.allowed_methods', array_unique(array_merge($methods, $this->methods)));
+            $methods = $context->get(Context::ALLOWED_METHODS_ATTR) ?? [];
+            $context->put(Context::ALLOWED_METHODS_ATTR, array_unique(array_merge($methods, $this->methods)));
             $stack->next()->handle($ctx);
 
             return;
         }
         // If both path and method matches, we store in context for next match
-        $context->put('_router.path', $path->replace($result->getMatchedString(), ''));
-        foreach ($result->getValues() as $key => $value) {
-            $context->put($key, $value);
-        }
+        $context->put(Context::PATH_ATTR, $path->replace($result->getMatchedString(), ''));
+        $context->put(Context::PARAMS_ATTR, array_merge(
+            $ctx->getParams(),
+            $result->getValues()
+        ));
 
         $this->handler->handle($ctx);
     }

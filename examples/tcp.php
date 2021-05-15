@@ -23,7 +23,6 @@ $conn->read($bytes, 4096 * 5);
 
 echo $bytes."\n";
 
-
 $conn = Castor\Net\Socket::dial('unix', '/var/run/docker.sock');
 
 $bytes = '';
