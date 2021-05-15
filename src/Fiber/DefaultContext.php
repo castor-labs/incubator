@@ -51,6 +51,18 @@ final class DefaultContext implements Context
         return $this->request->getContext()->get(self::PARAMS_ATTR) ?? [];
     }
 
+    public function getParsedBody(): array
+    {
+        $parsedBody = $this->request->getContext()->get(self::PARSED_BODY_ATTR) ?? [];
+        $body = $this->request->getBody();
+        if ([] === $parsedBody && $body instanceof Http\Payload\Parser) {
+            $parsedBody = $body->parse();
+            $this->request->getContext()->put(self::PARSED_BODY_ATTR, $parsedBody);
+        }
+
+        return $parsedBody;
+    }
+
     /**
      * {@inheritDoc}
      */

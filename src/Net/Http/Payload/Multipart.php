@@ -30,7 +30,7 @@ use Castor\Mime;
  * In a PHP managed server, the file headers and contents need to be parsed and
  * put either in temporary files or in memory.
  */
-final class Multipart implements ReadCloser
+final class Multipart implements ReadCloser, Parser
 {
     private ReadCloser $reader;
     private Mime\Multipart\Form $form;
@@ -69,5 +69,13 @@ final class Multipart implements ReadCloser
     public function getForm(): Mime\Multipart\Form
     {
         return $this->form;
+    }
+
+    public function parse(): array
+    {
+        $files = $this->form->getFiles();
+        $values = $this->form->getValues();
+
+        return array_merge($files, $values);
     }
 }

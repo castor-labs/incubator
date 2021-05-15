@@ -48,6 +48,12 @@ final class Request extends Http\Request
             $form = self::parseFormFromSapi($_FILES, $_POST);
             $body = new Http\Payload\Multipart($body, $form);
         }
+        if ($headers->contains('content-type', 'json')) {
+            $body = new Http\Payload\Json($body);
+        }
+        if ($headers->contains('content-type', 'urlencoded')) {
+            $body = new Http\Payload\UrlEncoded($body);
+        }
         $uri = Uri::marshalFromSapi($server, $headers->toMap());
         $protocol = self::marshalProtocolFromSapi($server);
 

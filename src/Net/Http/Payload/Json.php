@@ -24,18 +24,16 @@ use JsonException;
 /**
  * Class Json represents a Json payload in a Request Body.
  */
-final class Json implements Io\ReadCloser
+final class Json implements Io\ReadCloser, Parser
 {
     private Io\ReadCloser $reader;
-    private array $parsed;
 
     /**
      * Json constructor.
      */
-    public function __construct(Io\ReadCloser $reader, array $parsed = [])
+    public function __construct(Io\ReadCloser $reader)
     {
         $this->reader = $reader;
-        $this->parsed = $parsed;
     }
 
     /**
@@ -55,16 +53,17 @@ final class Json implements Io\ReadCloser
         return $this->reader->read($bytes, $length);
     }
 
+    public function getInnerBody(): Io\ReadCloser
+    {
+        return $this->reader;
+    }
+
     /**
-     * @throws Io\Error
+     * @throws Error
      * @throws JsonException
      */
-    public function toArray(): array
+    public function parse(): array
     {
-        if ([] === $this->parsed) {
-            $this->parsed = json_decode(Io\readAll($this->reader), true, 512, JSON_THROW_ON_ERROR);
-        }
-
-        return $this->parsed;
+        return json_decode(Io\readAll($this->reader), true, 512, JSON_THROW_ON_ERROR);
     }
 }

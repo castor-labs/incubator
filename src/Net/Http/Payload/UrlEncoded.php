@@ -23,18 +23,16 @@ use Castor\Io\Reader;
 /**
  * Class UrlEncoded represents a url encoded payload in a Request Body.
  */
-final class UrlEncoded implements Io\ReadCloser
+final class UrlEncoded implements Io\ReadCloser, Parser
 {
     private Io\ReadCloser $reader;
-    private array $parsed;
 
     /**
      * Json constructor.
      */
-    public function __construct(Io\ReadCloser $reader, array $parsed = [])
+    public function __construct(Io\ReadCloser $reader)
     {
         $this->reader = $reader;
-        $this->parsed = $parsed;
     }
 
     /**
@@ -62,12 +60,11 @@ final class UrlEncoded implements Io\ReadCloser
     /**
      * @throws Io\Error
      */
-    public function toArray(): array
+    public function parse(): array
     {
-        if ([] === $this->parsed) {
-            parse_str(Io\readAll($this->reader), $this->parsed);
-        }
+        $parsed = [];
+        parse_str(Io\readAll($this->reader), $parsed);
 
-        return $this->parsed;
+        return $parsed;
     }
 }

@@ -28,6 +28,7 @@ interface Context
     public const PARAMS_ATTR = '_PARAMS';
     public const PATH_ATTR = '_PATH';
     public const ALLOWED_METHODS_ATTR = '_ALLOWED_METHODS';
+    public const PARSED_BODY_ATTR = '_PARSED_BODY';
 
     /**
      * Returns the underlying writer for this connection.
@@ -76,6 +77,8 @@ interface Context
     public function getParam(string $name): ?string;
 
     public function getParams(): array;
+
+    public function getParsedBody(): array;
 
     /**
      * Writes a plain text response to the underlying connection.
