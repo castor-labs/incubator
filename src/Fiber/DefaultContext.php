@@ -27,7 +27,7 @@ final class DefaultContext implements Context
 {
     private Http\ResponseWriter $writer;
     private Http\Request $request;
-    private ?Template\PhpEngine $engine;
+    private ?Template\Engine $engine;
 
     /**
      * BaseContext constructor.
