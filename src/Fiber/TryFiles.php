@@ -26,13 +26,15 @@ use InvalidArgumentException;
 final class TryFiles implements Middleware
 {
     private string $path;
+    private bool $throwNotFound;
 
     /**
      * ServeStatic constructor.
      */
-    public function __construct(string $path)
+    public function __construct(string $path, bool $throwNotFound = true)
     {
         $this->path = $path;
+        $this->throwNotFound = $throwNotFound;
         $this->guard();
     }
 
@@ -51,6 +53,9 @@ final class TryFiles implements Middleware
         try {
             $file = Os\File::open($filename);
         } catch (Os\Error $e) {
+            if ($this->throwNotFound && '' !== Os\Path\extension($filename)) {
+                throw new Http\ProtocolError(Http\STATUS_NOT_FOUND);
+            }
             $stack->next()->handle($ctx);
 
             return;
