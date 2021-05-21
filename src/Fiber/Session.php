@@ -67,6 +67,11 @@ class Session
         return $this->data[$key] ?? null;
     }
 
+    public function has(string $key): bool
+    {
+        return array_key_exists($key, $this->data);
+    }
+
     public function set(string $key, $value): void
     {
         $this->data[$key] = $value;
