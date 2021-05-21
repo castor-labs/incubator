@@ -69,7 +69,7 @@ function trim(string $subject, string $chars, int $mode = TRIM_BOTH): string
 /**
  * @return string[]
  */
-function match(string $subject, string $pattern): array
+function matches(string $subject, string $pattern): array
 {
     $matches = [];
     preg_match($pattern, $subject, $matches);
