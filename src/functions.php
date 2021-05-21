@@ -194,7 +194,7 @@ function length(array $array): int
  */
 function has(array $array, $element): bool
 {
-    return in_array($array, $element, true);
+    return in_array($element, $array, true);
 }
 
 function unique(array $array): array
