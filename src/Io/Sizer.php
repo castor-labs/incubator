@@ -13,18 +13,18 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Castor\Net\Uri;
-
-use Castor\Str;
+namespace Castor\Io;
 
 /**
- * Class Fragment.
+ * Interface Sizer is implemented by types whose size in bytes can be known
+ * at runtime.
  */
-class Fragment extends Str
+interface Sizer
 {
-    public function __construct(string $string)
-    {
-        $string = rawurlencode(rawurldecode($string));
-        parent::__construct($string);
-    }
+    /**
+     * Returns the size in bytes.
+     *
+     * @throws Error if the size cannot be determined
+     */
+    public function size(): int;
 }

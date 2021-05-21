@@ -28,17 +28,13 @@ class UriTest extends TestCase
     public function testItParsesEveryComponent(): void
     {
         $uri = Uri::parse('https://mnavarro.dev/home?foo=bar&bar=foo#something');
-        self::assertTrue($uri->getScheme()->equals('https'));
-        self::assertSame('443', $uri->getScheme()->getDefaultPort());
-        self::assertTrue($uri->getScheme()->isSecure());
-        self::assertTrue($uri->getAuthority()->getHost()->equals('mnavarro.dev'));
-        self::assertSame('', $uri->getAuthority()->getPort());
-        self::assertTrue($uri->getFragment()->equals('something'));
-        self::assertSame('foo=bar&bar=foo', (string) $uri->getQuery());
-        self::assertTrue($uri->getQuery()->has('foo'));
-        self::assertTrue($uri->getQuery()->has('bar'));
-        self::assertTrue($uri->getPath()->equals('/home'));
-        self::assertSame('foo', $uri->getQuery()->get('bar')[0]);
-        self::assertSame('bar', $uri->getQuery()->get('foo')[0]);
+        self::assertSame('https', $uri->getScheme());
+        self::assertSame('443', $uri->getDefaultPort());
+        self::assertSame('mnavarro.dev', $uri->getHost());
+        self::assertSame('', $uri->getPort());
+        self::assertSame('/home', $uri->getPath());
+        self::assertSame('foo=bar&bar=foo', $uri->getQuery());
+        self::assertSame('something', $uri->getFragment());
+        self::assertSame('https://mnavarro.dev/home?foo=bar&bar=foo#something', (string) $uri);
     }
 }

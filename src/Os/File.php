@@ -16,15 +16,17 @@ declare(strict_types=1);
 namespace Castor\Os;
 
 use Castor\Io;
-use Castor\Mime\DefaultRegistry;
+use Castor\Mime;
+use function Castor\Os\Path\extension;
+use function Castor\Os\Path\isFile;
 
 /**
- * Class File.
+ * Class File represents an operating system file.
  */
-class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, Io\WriterTo
+final class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, Io\WriterTo, Io\Sizer, Mime\Type
 {
     use Io\ResourceHelper;
-    private Path $path;
+    private string $path;
 
     /**
      * File constructor.
@@ -33,53 +35,47 @@ class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, I
      *
      * @throws Io\Error
      */
-    protected function __construct($resource, Path $path)
+    protected function __construct($resource, string $path)
     {
         $this->setResource($resource);
         if (!stream_is_local($this->resource)) {
-            throw new Io\Error('You must provide a local file');
+            throw new Io\Error(sprintf('The file %s is not a local file', $path));
         }
         $this->path = $path;
+        $this->resource = $resource;
     }
 
     /**
-     * @throws Io\Error
+     * @throws Error
      */
     public static function open(string $path): File
     {
-        $osPath = Path::make($path);
-        if (!$osPath->isFile()) {
-            throw new Io\Error('File does not exist');
+        if (isFile($path)) {
+            throw new Error(sprintf('File %s does not exist', $path));
         }
-        $resource = fopen($osPath->toStr(), 'r+b');
+        $resource = fopen($path, 'r+b');
 
-        return new self($resource, $osPath);
+        return new self($resource, $path);
     }
 
-    /**
-     * @throws Io\Error
-     */
     public static function put(string $path): File
     {
-        $osPath = Path::make($path);
         $resource = fopen($path, 'w+b');
 
-        return new self($resource, $osPath);
+        return new self($resource, $path);
     }
 
     /**
-     * @throws Io\Error
+     * @throws Error
      */
     public static function make(string $path): File
     {
-        $osPath = Path::make($path);
-
-        if ($osPath->isFile()) {
-            throw new Io\Error('File already exists');
+        if (isFile($path)) {
+            throw new Error(sprintf('File %s already exists', $path));
         }
-        $resource = fopen($osPath->toStr(), 'x+b');
+        $resource = fopen($path, 'x+b');
 
-        return new self($resource, $osPath);
+        return new self($resource, $path);
     }
 
     /**
@@ -130,18 +126,19 @@ class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\WriterAt, I
         return Io\copy($this, $writer);
     }
 
-    public function getSize(): int
+    public function size(): int
     {
-        return filesize($this->path->toStr());
+        return filesize($this->path);
     }
 
-    public function getPath(): Path
+    public function getPath(): string
     {
         return $this->path;
     }
 
-    public function getContentType(): string
+    public function getMimeType(): string
     {
-        return DefaultRegistry::get()->getMimeType($this->path->getExtension()) ?? 'application/octet-stream';
+        return Mime\DefaultRegistry::get()
+            ->getMimeType(extension($this->path)) ?? 'application/octet-stream';
     }
 }

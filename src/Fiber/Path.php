@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Castor\Fiber;
 
 use Castor\Net\Http;
+use Castor\Str;
 use MNC\PathToRegExpPHP\NoMatchException;
 use MNC\PathToRegExpPHP\PathRegExp;
 use MNC\PathToRegExpPHP\PathRegExpFactory;
@@ -52,14 +53,14 @@ class Path implements Middleware
 
         try {
             $path = $context->get(Context::PATH_ATTR) ?? $request->getUri()->getPath();
-            $result = $this->regExp->match((string) $path);
+            $result = $this->regExp->match($path);
         } catch (NoMatchException $e) {
             $stack->next()->handle($ctx);
 
             return;
         }
 
-        $context->put(Context::PATH_ATTR, $path->replace($result->getMatchedString(), ''));
+        $context->put(Context::PATH_ATTR, Str\replace($path, $result->getMatchedString(), ''));
         $context->put(Context::PARAMS_ATTR, array_merge(
             $ctx->getParams(),
             $result->getValues()

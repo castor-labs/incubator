@@ -15,11 +15,9 @@ declare(strict_types=1);
 
 namespace Castor\Fiber;
 
-use Castor\Io;
 use Castor\Net\Http;
 use Castor\Os;
 use Castor\Template;
-use InvalidArgumentException;
 use JsonException;
 
 /**
@@ -116,19 +114,15 @@ final class DefaultContext implements Context
     }
 
     /**
-     * @throws Io\Error
+     * {@inheritDoc}
      */
     public function file(string $path, string $downloadName = null, int $status = Http\STATUS_OK): void
     {
-        $osPath = Os\Path::make($path);
-        if (!$osPath->isFile()) {
-            throw new InvalidArgumentException('File %s does not exist');
-        }
         $file = Os\File::open($path);
-        $this->writer->getHeaders()->add('Content-Type', $file->getContentType());
-        $this->writer->getHeaders()->add('Content-Length', (string) $file->getSize());
+        $this->writer->getHeaders()->add('Content-Type', $file->getMimeType());
+        $this->writer->getHeaders()->add('Content-Length', (string) $file->size());
         if ('' === $downloadName) {
-            $downloadName = $file->getPath()->getFilename();
+            $downloadName = Os\Path\filename($path);
         }
         if (null !== $downloadName) {
             $this->writer->getHeaders()->add('Content-Disposition', sprintf('attachment; filename="%s"', $downloadName));

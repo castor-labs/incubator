@@ -13,10 +13,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-require_once __DIR__.'/src/Io/functions.php';
-require_once __DIR__.'/src/Net/functions.php';
-require_once __DIR__.'/src/Net/Http/functions.php';
-require_once __DIR__.'/src/Net/Http/Cgi/functions.php';
-require_once __DIR__.'/src/Os/functions.php';
-require_once __DIR__.'/src/functions.php';
+namespace Castor\Storage;
 
+use Castor\Io;
+use Castor\Mime;
+
+/**
+ * A Blob represents some bytes that have a predefined size and a mime type.
+ */
+interface Blob extends Io\Reader, Mime\Type, Io\Sizer
+{
+}

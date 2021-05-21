@@ -13,13 +13,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Castor\Net\Dns;
-
-use Exception;
+namespace Castor\Mime;
 
 /**
- * Class InvalidName.
+ * Interface Type is implemented by types that have a mime type associated
+ * with them.
  */
-class InvalidName extends Exception
+interface Type
 {
+    public function getMimeType(): string;
 }

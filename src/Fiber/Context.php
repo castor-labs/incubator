@@ -17,8 +17,7 @@ namespace Castor\Fiber;
 
 use Castor\Io;
 use Castor\Net\Http;
-use const Castor\Net\Http\STATUS_OK;
-use InvalidArgumentException;
+use Castor\Os;
 
 /**
  * Class Context.
@@ -60,7 +59,7 @@ interface Context
      *
      * @throws Io\Error if the writing operation fails
      */
-    public function html(string $html, int $status = STATUS_OK): void;
+    public function html(string $html, int $status = Http\STATUS_OK): void;
 
     /**
      * Writes a json response to the underlying connection.
@@ -69,14 +68,14 @@ interface Context
      *
      * @throws Io\Error if the writing operation fails
      */
-    public function json($data, array $context = [], int $status = STATUS_OK): void;
+    public function json($data, array $context = [], int $status = Http\STATUS_OK): void;
 
     /**
      * Renders a view using a template engine.
      *
      * @throws Io\Error if the writing operation fails
      */
-    public function view(string $template, array $context = [], int $status = STATUS_OK): void;
+    public function view(string $template, array $context = [], int $status = Http\STATUS_OK): void;
 
     /**
      * Sends a file to the client.
@@ -85,16 +84,16 @@ interface Context
      *
      * If $downloadName is an empty string, then the filename of the provided path will be used.
      *
-     * @throws InvalidArgumentException if the $path provided is not a file
+     * @throws Os\Error if the $path provided is not a file
      */
-    public function file(string $path, string $downloadName = null, int $status = STATUS_OK): void;
+    public function file(string $path, string $downloadName = null, int $status = Http\STATUS_OK): void;
 
     /**
      * Writes a plain text response to the underlying connection.
      *
      * @throws Io\Error if the writing operation fails
      */
-    public function text(string $text, int $status = STATUS_OK): void;
+    public function text(string $text, int $status = Http\STATUS_OK): void;
 
     /**
      * Writes a redirect response to the underlying connection.

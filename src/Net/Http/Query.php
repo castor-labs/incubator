@@ -13,12 +13,15 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Castor\Net\Uri;
+namespace Castor\Net\Http;
+
+use Castor\Str;
+use Stringable;
 
 /**
- * Class Query.
+ * Class Query represents parsed query parameters.
  */
-class Query implements \Stringable
+class Query implements Stringable
 {
     /**
      * @psalm-param array<string,list<string>>
@@ -35,6 +38,11 @@ class Query implements \Stringable
 
     public function __toString(): string
     {
+        return $this->toStr();
+    }
+
+    public function toStr(): string
+    {
         $parts = [];
         foreach ($this->params as $key => $value) {
             foreach ($value as $item) {
@@ -42,7 +50,12 @@ class Query implements \Stringable
             }
         }
 
-        return implode('&', $parts);
+        return Str\join('&', ...$parts);
+    }
+
+    public static function create(): Query
+    {
+        return new self([]);
     }
 
     public static function parse(string $query): Query

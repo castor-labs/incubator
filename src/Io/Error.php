@@ -15,11 +15,11 @@ declare(strict_types=1);
 
 namespace Castor\Io;
 
-use Exception;
+use RuntimeException;
 
 /**
- * Class Error represents an I/O error.
+ * Class Error represents an I/O error that occurs at runtime.
  */
-class Error extends Exception
+class Error extends RuntimeException
 {
 }

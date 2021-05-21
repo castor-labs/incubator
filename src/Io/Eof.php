@@ -15,9 +15,11 @@ declare(strict_types=1);
 
 namespace Castor\Io;
 
+use Exception;
+
 /**
- * Class Eof represents an End-of-file condition.
+ * Class Eof is thrown by Castor\Io\Reader instances when end-of-file is reached.
  */
-class Eof extends Error
+class Eof extends Exception
 {
 }

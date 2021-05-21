@@ -13,10 +13,25 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-require_once __DIR__.'/src/Io/functions.php';
-require_once __DIR__.'/src/Net/functions.php';
-require_once __DIR__.'/src/Net/Http/functions.php';
-require_once __DIR__.'/src/Net/Http/Cgi/functions.php';
-require_once __DIR__.'/src/Os/functions.php';
-require_once __DIR__.'/src/functions.php';
+namespace Castor\Fiber;
 
+/**
+ * Interface SessionStore.
+ */
+interface SessionStore
+{
+    /**
+     * Obtains a session.
+     */
+    public function get(Context $ctx): Session;
+
+    /**
+     * Saves a session.
+     */
+    public function save(Session $session): void;
+
+    /**
+     * Destroys a session.
+     */
+    public function destroy(Session $session): void;
+}

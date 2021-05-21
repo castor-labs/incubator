@@ -21,7 +21,7 @@ namespace Castor\Io;
 interface Closer
 {
     /**
-     * @throws Error if the source could not be closed
+     * @throws Error if the bytes source could not be closed
      */
     public function close(): void;
 }

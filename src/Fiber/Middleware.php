@@ -15,10 +15,19 @@ declare(strict_types=1);
 
 namespace Castor\Fiber;
 
+use Castor\Net\Http;
+
 /**
  * Interface Handler.
  */
 interface Middleware
 {
+    /**
+     * Process the Fiber context.
+     *
+     * The middleware has the option to delegate to the next item in the stack.
+     *
+     * @throws Http\ProtocolError when an error occurs
+     */
     public function process(Context $ctx, Stack $stack): void;
 }

@@ -21,7 +21,7 @@ namespace Castor\Io;
 interface Writer
 {
     /**
-     * @throws Error
+     * @throws Error if the bytes source could not be written
      */
     public function write(string $bytes): int;
 }

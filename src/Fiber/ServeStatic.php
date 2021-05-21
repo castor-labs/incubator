@@ -18,25 +18,27 @@ namespace Castor\Fiber;
 use Castor\Io\Error;
 use Castor\Net\Http;
 use Castor\Os;
+use InvalidArgumentException;
 
 /**
  * Class StaticPath.
  */
 final class ServeStatic implements Handler
 {
-    private Os\Path $path;
+    private string $path;
 
     /**
      * ServeStatic constructor.
      */
-    public function __construct(Os\Path $path)
+    public function __construct(string $path)
     {
         $this->path = $path;
+        $this->guard();
     }
 
     public static function from(string $path): ServeStatic
     {
-        return new self(Os\Path::make($path));
+        return new self($path);
     }
 
     /**
@@ -47,15 +49,24 @@ final class ServeStatic implements Handler
     {
         $request = $ctx->getRequest();
         $context = $request->getContext();
-        $path = $context->get('_router.path') ?? $request->getUri()->getPath();
+        $path = $context->get(Context::PATH_ATTR) ?? $request->getUri()->getPath();
 
-        $filename = $this->path->join($path->toOsPath()->toStr());
-        if (!$filename->isFile()) {
-            throw new Http\ProtocolError(Http\STATUS_NOT_FOUND, sprintf('File %s does not exists', $path));
+        $filename = Os\Path\join($this->path, $path);
+
+        try {
+            $file = Os\File::open($filename);
+        } catch (Os\Error $e) {
+            throw new Http\ProtocolError(Http\STATUS_NOT_FOUND, sprintf('File %s does not exist', $path), $e);
         }
-        $file = Os\File::open($filename->toStr());
-        $ctx->getWriter()->getHeaders()->add('Content-Type', $file->getContentType());
-        $ctx->getWriter()->getHeaders()->add('Content-Length', (string) $file->getSize());
+        $ctx->getWriter()->getHeaders()->add('Content-Type', $file->getMimeType());
+        $ctx->getWriter()->getHeaders()->add('Content-Length', (string) $file->size());
         $file->writeTo($ctx->getWriter());
+    }
+
+    private function guard(): void
+    {
+        if (!Os\Path\isDirectory($this->path)) {
+            throw new InvalidArgumentException('Argument 1 passed to %s::__construct must be a valid filesystem directory', __CLASS__);
+        }
     }
 }

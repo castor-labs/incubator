@@ -15,33 +15,48 @@ declare(strict_types=1);
 
 namespace Castor\Net;
 
+use Castor\Str;
+use Stringable;
+
 /**
  * Class Uri.
  */
-class Uri
+class Uri implements Stringable
 {
-    private Uri\Scheme $scheme;
-    private Uri\Authority $authority;
-    private Uri\Path $path;
-    private Uri\Query $query;
-    private Uri\Fragment $fragment;
+    private static array $defaultSchemePort = [
+        'http' => '80',
+        'https' => '443',
+        'ftp' => '21',
+        'ssh' => '22',
+    ];
+
+    private string $scheme;
+    private string $user;
+    private string $pass;
+    private string $host;
+    private string $port;
+    private string $path;
+    private string $query;
+    private string $fragment;
 
     /**
      * Uri constructor.
      */
-    protected function __construct(Uri\Scheme $scheme, Uri\Authority $authority, Uri\Path $path, Uri\Query $query, Uri\Fragment $fragment)
+    protected function __construct(string $scheme, string $user = '', string $pass = '', string $host = '', string $port = '', string $path = '', string $query = '', string $fragment = '')
     {
         $this->scheme = $scheme;
-        $this->authority = $authority;
+        $this->user = $user;
+        $this->pass = $pass;
+        $this->host = $host;
+        $this->port = $port;
         $this->path = $path;
         $this->query = $query;
         $this->fragment = $fragment;
     }
 
-    public function __clone()
+    public function __toString(): string
     {
-        $this->query = clone $this->query;
-        $this->authority = clone $this->authority;
+        return $this->toStr();
     }
 
     /**
@@ -56,38 +71,16 @@ class Uri
             );
         }
 
-        // http://www.apps.ietf.org/rfc/rfc3986.html#sec-3.1
-        // "schemes are case-insensitive"
-        $scheme = new Uri\Scheme($parts['scheme'] ?? '');
-        $host = $parts['host'] ?? '';
-        $port = $parts['port'] ?? '';
-        $path = $parts['path'] ?? '';
-        $user = $parts['user'] ?? '';
-        $pass = $parts['pass'] ?? '';
-        $fragment = $parts['fragment'] ?? '';
-        $rawQuery = $parts['query'] ?? '';
-
-        $userInfo = '';
-        if ('' !== $user) {
-            $userInfo .= $user;
-        }
-        if ('' !== $pass) {
-            $userInfo .= ':'.$pass;
-        }
-
-        $fragment = rawurlencode(rawurldecode($fragment));
-
-        try {
-            return new self(
-                $scheme,
-                Uri\Authority::create($host, $port, $userInfo),
-                Uri\Path::make($path),
-                Uri\Query::parse($rawQuery),
-                Uri\Fragment::make($fragment)
-            );
-        } catch (Dns\InvalidName $e) {
-            throw new InvalidUri("Invalid URI: Invalid host: {$host}", 0, $e);
-        }
+        return new self(
+            Str\toLower($parts['scheme'] ?? ''),
+            $parts['user'] ?? '',
+            $parts['pass'] ?? '',
+            $parts['host'] ?? '',
+            $parts['port'] ?? '',
+            $parts['path'] ?? '',
+            $parts['query'] ?? '',
+            rawurlencode(rawurldecode($parts['fragment'] ?? '')),
+        );
     }
 
     /**
@@ -96,17 +89,17 @@ class Uri
     public static function join(Uri $uri, string ...$parts): Uri
     {
         $clone = clone $uri;
-        $clone->path = $clone->path->join(...$parts);
+        $clone->path = Str\join($clone->path, ...$parts);
 
         return $clone;
     }
 
-    public function getScheme(): Uri\Scheme
+    public function getScheme(): string
     {
         return $this->scheme;
     }
 
-    public function withScheme(Uri\Scheme $scheme): Uri
+    public function withScheme(string $scheme): Uri
     {
         $clone = clone $this;
         $clone->scheme = $scheme;
@@ -114,24 +107,89 @@ class Uri
         return $clone;
     }
 
-    public function getAuthority(): Uri\Authority
+    public function getUser(): string
     {
-        return $this->authority;
+        return $this->user;
     }
 
-    public function getPath(): Uri\Path
+    public function getPass(): string
+    {
+        return $this->pass;
+    }
+
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    public function getPort(bool $ignoreDefault = false): string
+    {
+        if (
+            true === $ignoreDefault
+            && $this->port === (self::$defaultSchemePort[$this->scheme] ?? '')
+        ) {
+            return '';
+        }
+
+        return $this->port;
+    }
+
+    public function getAuthority(): string
+    {
+        if ('' === $this->host) {
+            return '';
+        }
+        $auth = '//';
+        if ('' !== $this->user || '' !== $this->pass) {
+            $auth .= $this->user.':'.$this->pass.'@';
+        }
+        $auth .= $this->host;
+        $port = $this->getPort(true);
+        if ('' !== $port) {
+            $auth .= ':'.$port;
+        }
+
+        return $auth;
+    }
+
+    public function getPath(): string
     {
         return $this->path;
     }
 
-    public function getQuery(): Uri\Query
+    public function getQuery(): string
     {
         return $this->query;
     }
 
-    public function getFragment(): Uri\Fragment
+    /**
+     * Returns the default port for the uri scheme.
+     */
+    public function getDefaultPort(): string
+    {
+        return static::$defaultSchemePort[$this->scheme] ?? '';
+    }
+
+    public function getFragment(): string
     {
         return $this->fragment;
+    }
+
+    public function toStr(): string
+    {
+        $uri = $this->scheme.':';
+        $uri .= $this->getAuthority();
+        if ('' !== $this->path) {
+            $uri .= $this->path;
+        }
+        if ('' !== $this->query) {
+            $uri .= '?'.$this->query;
+        }
+        if ('' !== $this->fragment) {
+            $uri .= '#'.$this->fragment;
+        }
+
+        return $uri;
     }
 
     /**

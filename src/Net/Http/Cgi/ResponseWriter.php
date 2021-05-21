@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Castor\Net\Http\Cgi;
 
+use Castor\Io\ResourceHelper;
 use Castor\Net\Http;
 use Castor\Net\Http\Headers;
 
@@ -29,21 +30,26 @@ use Castor\Net\Http\Headers;
  */
 final class ResponseWriter implements Http\ResponseWriter, Http\Flusher
 {
+    use ResourceHelper;
+
     private Headers $headers;
     private bool $sentHeaders;
 
     /**
      * CgiResponseWriter constructor.
+     *
+     * @param resource $resource
      */
-    private function __construct(Headers $headers)
+    private function __construct($resource, Headers $headers)
     {
+        $this->setResource($resource);
         $this->headers = $headers;
         $this->sentHeaders = false;
     }
 
     public static function create(): ResponseWriter
     {
-        return new self(new Headers());
+        return new self(fopen('php://output', 'wb'), new Headers());
     }
 
     public function write(string $bytes): int
@@ -51,9 +57,8 @@ final class ResponseWriter implements Http\ResponseWriter, Http\Flusher
         if (false === $this->sentHeaders) {
             $this->writeHeaders();
         }
-        echo $bytes;
 
-        return strlen($bytes);
+        return $this->innerWrite($bytes);
     }
 
     public function writeHeaders(int $statusCode = 200): void
@@ -78,6 +83,5 @@ final class ResponseWriter implements Http\ResponseWriter, Http\Flusher
     public function flush(): void
     {
         ob_flush();
-        flush();
     }
 }

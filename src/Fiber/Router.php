@@ -25,11 +25,11 @@ use Castor\Net\Http\ResponseWriter;
  * This Router implements a middleware based execution model, very similar
  * to the Express JS framework.
  *
- * Routes are middleware that is matched in the order of registration, so you
- * have full control over which routes match first and how.
+ * Routes are Middleware instances that are matched in the order of registration,
+ * so you have full control over which routes match first and how.
  *
  * This model is not very performant if you register all the routes in the same
- * router. Any routes that share a path should be put under a
+ * router. Any routes that share a path should be put under a nested router.
  */
 class Router implements Http\Handler, Handler
 {
@@ -176,7 +176,7 @@ class Router implements Http\Handler, Handler
     }
 
     /**
-     * Handles a routing request.
+     * {@inheritDoc}
      */
     public function handle(Context $ctx): void
     {
@@ -190,6 +190,8 @@ class Router implements Http\Handler, Handler
     /**
      * @param ResponseWriter $writer
      * @param Request        $request
+     *
+     * @throws Http\ProtocolError
      */
     public function handleHTTP(Http\ResponseWriter $writer, Http\Request $request): void
     {

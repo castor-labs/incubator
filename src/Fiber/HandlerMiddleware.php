@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Castor\Fiber;
 
+use Castor\Arr;
+
 /**
  * Class MiddlewareHandler.
  */
@@ -40,7 +42,7 @@ final class HandlerMiddleware implements Handler, Stack
         if ([] === $middleware) {
             throw new \RuntimeException('You need at least one middleware to create a stack');
         }
-        $middleware = array_reverse($middleware);
+        $middleware = Arr\reverse($middleware);
         foreach ($middleware as $frame) {
             $handler = new self($frame, $handler);
         }

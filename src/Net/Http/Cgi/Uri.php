@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Castor\Net\Http\Cgi;
 
 use Castor\Net;
+use Castor\Str;
 
 /**
  * Class Uri.
@@ -199,16 +200,19 @@ final class Uri extends Net\Uri
 
         // URI fragment
         $fragment = '';
-        if (str_contains($path, '#')) {
-            [$path, $fragment] = explode('#', $path, 2);
+        if (Str\contains($path, '#')) {
+            [$path, $fragment] = Str\split($path, '#', 2);
         }
 
         return new self(
-            Net\Uri\Scheme::make($scheme),
-            Net\Uri\Authority::create($host, (string) $port, ''),
-            Net\Uri\Path::make($path),
-            Net\Uri\Query::parse($query),
-            Net\Uri\Fragment::make($fragment)
+            $scheme,
+            '',
+            '',
+            $host,
+            (string) $port,
+            $path,
+            $query,
+            $fragment
         );
     }
 }

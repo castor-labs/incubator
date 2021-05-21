@@ -22,5 +22,10 @@ use Castor\Net\Uri;
  */
 interface Factory
 {
+    /**
+     * Creates a storage driver using a Uri.
+     *
+     * @throws UnsupportedScheme
+     */
     public function create(Uri $uri): Driver;
 }

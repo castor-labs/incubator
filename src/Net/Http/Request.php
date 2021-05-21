@@ -24,6 +24,7 @@ use Castor\Net\Uri;
 class Request
 {
     protected const COOKIES_ATTR = '_COOKIES';
+    protected const QUERY_ATTR = '_QUERY';
 
     private string $method;
     private Uri $uri;
@@ -58,6 +59,18 @@ class Request
     public function getUri(): Uri
     {
         return $this->uri;
+    }
+
+    public function getQuery(): Query
+    {
+        if (!$this->context->has(self::QUERY_ATTR)) {
+            $this->context->put(
+                self::QUERY_ATTR,
+                Query::parse($this->uri->getQuery())
+            );
+        }
+
+        return $this->context->get(self::QUERY_ATTR) ?? Query::create();
     }
 
     public function getProtocol(): Protocol

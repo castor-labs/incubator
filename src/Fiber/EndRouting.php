@@ -15,9 +15,9 @@ declare(strict_types=1);
 
 namespace Castor\Fiber;
 
+use Castor\Net\Http;
 use Castor\Net\Http\ProtocolError;
-use const Castor\Net\Http\STATUS_METHOD_NOT_ALLOWED;
-use const Castor\Net\Http\STATUS_NOT_FOUND;
+use Castor\Str;
 
 /**
  * The EndRouting handler throws a 404 or 405 Http exceptions.
@@ -32,8 +32,8 @@ final class EndRouting implements Handler
         $allowedMethods = $ctx->getRequest()->getContext()->get(Context::ALLOWED_METHODS_ATTR) ?? [];
         if ([] === $allowedMethods) {
             throw new ProtocolError(
-                STATUS_NOT_FOUND,
-                sprintf(
+                Http\STATUS_NOT_FOUND,
+                Str\printf(
                     'Could not %s %s',
                     $ctx->getRequest()->getMethod(),
                     $ctx->getRequest()->getUri()->getPath()
@@ -42,12 +42,12 @@ final class EndRouting implements Handler
         }
 
         throw new ProtocolError(
-            STATUS_METHOD_NOT_ALLOWED,
-            sprintf(
-                'Could not match %s %s. Allowed methods: %s',
+            Http\STATUS_METHOD_NOT_ALLOWED,
+            Str\printf(
+                'Could not %s %s. Allowed methods: %s',
                 $ctx->getRequest()->getMethod(),
                 $ctx->getRequest()->getUri()->getPath(),
-                implode(', ', $allowedMethods)
+                Str\join(', ', ...$allowedMethods)
             )
         );
     }
