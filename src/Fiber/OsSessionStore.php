@@ -25,6 +25,8 @@ use Castor\Os\Path;
  */
 final class OsSessionStore implements SessionStore
 {
+    use SessionSerializer;
+
     private SessionConfig $config;
     private string $path;
 
@@ -52,15 +54,9 @@ final class OsSessionStore implements SessionStore
         } catch (Os\Error $e) {
             return new Session($ctx, $this->config, $sessId, [], Instant::now());
         }
-        $data = unserialize(Io\readAll($file), ['allowed_classes' => false]);
 
-        $session = new Session(
-            $ctx,
-            $this->config,
-            $data['_id'],
-            $data['_data'],
-            Instant::of($data['_created'])
-        );
+        $session = $this->deserialize($ctx, $this->config, Io\readAll($file));
+
         if ($session->isExpired()) {
             $session->destroy();
 
@@ -79,12 +75,7 @@ final class OsSessionStore implements SessionStore
         $filename = Path\join($this->path, $session->getId());
         $file = Os\File::put($filename);
         $file->seek(0, Io\Seeker::START);
-        $data = [
-            '_id' => $session->getId(),
-            '_data' => $session->all(),
-            '_created' => $session->getCreatedAt()->getEpochSecond(),
-        ];
-        $file->write(serialize($data));
+        $file->write($this->serialize($session));
     }
 
     public function destroy(Session $session): void

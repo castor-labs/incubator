@@ -19,6 +19,7 @@ use Castor\Net\Http;
 use Castor\Os;
 use Castor\Template;
 use JsonException;
+use RuntimeException;
 
 /**
  * Class BaseContext.
@@ -59,6 +60,30 @@ final class DefaultContext implements Context
         }
 
         return $parsedBody;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSession(): Session
+    {
+        throw new RuntimeException('Session support is not enabled. You must use Castor\Fiber\SessionSupport in your pipeline');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addFlash(string $key, string $message): void
+    {
+        $this->getSession();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function readFlash(string $key)
+    {
+        $this->getSession();
     }
 
     /**

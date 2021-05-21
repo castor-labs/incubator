@@ -23,15 +23,13 @@ use Castor\Net\Http;
 final class SessionSupport implements Middleware
 {
     private SessionConfig $config;
-    private string $attrName;
 
     /**
      * StartSession constructor.
      */
-    public function __construct(SessionConfig $config = null, string $attrName = 'session')
+    public function __construct(SessionConfig $config = null)
     {
         $this->config = $config ?? new SessionConfig();
-        $this->attrName = $attrName;
     }
 
     /**
@@ -40,7 +38,7 @@ final class SessionSupport implements Middleware
     public function process(Context $ctx, Stack $stack): void
     {
         $session = $this->config->store->get($ctx);
-        $ctx->getRequest()->getContext()->put($this->attrName, $session);
+        $ctx = StatefulContext::initialize($ctx, $session);
         $stack->next()->handle($ctx);
         $session->save();
     }

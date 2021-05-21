@@ -55,6 +55,11 @@ interface Context
     public function getParsedBody(): array;
 
     /**
+     * Gets the session from the current context.
+     */
+    public function getSession(): Session;
+
+    /**
      * Writes an html response to the underlying connection.
      *
      * @throws Io\Error if the writing operation fails

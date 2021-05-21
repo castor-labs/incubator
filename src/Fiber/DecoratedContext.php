@@ -75,6 +75,14 @@ abstract class DecoratedContext implements Context
     /**
      * {@inheritDoc}
      */
+    public function getSession(): Session
+    {
+        return $this->context->getSession();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function html(string $html, int $status = Http\STATUS_OK): void
     {
         $this->context->html($html, $status);

@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Castor\Fiber;
 
 use Brick\DateTime\Instant;
+use Castor\Arr;
 use Castor\Net\Http;
 
 /**
@@ -23,6 +24,8 @@ use Castor\Net\Http;
  */
 class Session
 {
+    private const FLASHES_KEY = '_flashes';
+
     protected string $id;
     protected array $data;
     protected bool $touched;
@@ -42,6 +45,7 @@ class Session
         $this->data = $data;
         $this->createdAt = $createdAt;
         $this->touched = false;
+        $this->processFlashes();
     }
 
     public static function create(Context $ctx, SessionConfig $config): Session
@@ -70,6 +74,16 @@ class Session
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->data);
+    }
+
+    /**
+     * @param $value
+     */
+    public function flash(string $key, $value)
+    {
+        $flashes = $this->get(self::FLASHES_KEY) ?? [];
+        $flashes[$key] = $value;
+        $this->set(self::FLASHES_KEY, $flashes);
     }
 
     public function set(string $key, $value): void
@@ -121,5 +135,16 @@ class Session
     public function isExpired(): bool
     {
         return $this->createdAt->plus($this->config->ttl)->isPast();
+    }
+
+    private function processFlashes(): void
+    {
+        $flashes = $this->data[self::FLASHES_KEY] ?? [];
+        if ([] === $flashes) {
+            return;
+        }
+        $this->data[self::FLASHES_KEY] = [];
+        $this->data = Arr\merge($this->data, $flashes);
+        $this->touched = true;
     }
 }
