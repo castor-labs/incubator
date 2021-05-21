@@ -50,7 +50,7 @@ final class File implements Io\ReadSeeker, Io\WriteSeeker, Io\ReaderAt, Io\Write
      */
     public static function open(string $path): File
     {
-        if (isFile($path)) {
+        if (!isFile($path)) {
             throw new Error(sprintf('File %s does not exist', $path));
         }
         $resource = fopen($path, 'r+b');
