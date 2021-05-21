@@ -21,9 +21,9 @@ use Castor\Os;
 use InvalidArgumentException;
 
 /**
- * Class StaticPath.
+ * Class TryFiles.
  */
-final class ServeStatic implements Handler
+final class TryFiles implements Middleware
 {
     private string $path;
 
@@ -36,16 +36,11 @@ final class ServeStatic implements Handler
         $this->guard();
     }
 
-    public static function from(string $path): ServeStatic
-    {
-        return new self($path);
-    }
-
     /**
      * @throws Error
      * @throws Http\ProtocolError
      */
-    public function handle(Context $ctx): void
+    public function process(Context $ctx, Stack $stack): void
     {
         $request = $ctx->getRequest();
         $context = $request->getContext();
@@ -56,7 +51,9 @@ final class ServeStatic implements Handler
         try {
             $file = Os\File::open($filename);
         } catch (Os\Error $e) {
-            throw new Http\ProtocolError(Http\STATUS_NOT_FOUND, sprintf('File %s does not exist', $path), $e);
+            $stack->next()->handle($ctx);
+
+            return;
         }
         $ctx->getWriter()->getHeaders()->add('Content-Type', $file->getMimeType());
         $ctx->getWriter()->getHeaders()->add('Content-Length', (string) $file->size());

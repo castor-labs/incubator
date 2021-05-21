@@ -143,14 +143,6 @@ class Router implements Http\Handler, Handler
     }
 
     /**
-     * Register a static path handler.
-     */
-    public function statics(string $path, string $directory): Router
-    {
-        return $this->use(new CatchHttpError(Path::define($path, ServeStatic::from($directory)), 404));
-    }
-
-    /**
      * Mounts a handler into a path.
      *
      * If the path matches the handler will be executed.
