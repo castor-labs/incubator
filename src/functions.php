@@ -97,7 +97,7 @@ function toLower(string $subject): string
  */
 function replace(string $subject, string $search, string $replacement): string
 {
-    return str_replace($subject, $search, $replacement);
+    return str_replace($search, $replacement, $subject);
 }
 
 /**
