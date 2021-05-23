@@ -77,7 +77,7 @@ class Uri implements Stringable
             $parts['user'] ?? '',
             $parts['pass'] ?? '',
             $parts['host'] ?? '',
-            $parts['port'] ?? '',
+            (string) ($parts['port'] ?? ''),
             $parts['path'] ?? '',
             $parts['query'] ?? '',
             rawurlencode(rawurldecode($parts['fragment'] ?? '')),
