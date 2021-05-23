@@ -20,7 +20,7 @@ standard library.
 
 The most notable interfaces are `Castor\Io\Reader` and `Castor\Io\Writer`.
 Many of the classes of this composer package implement them, like the
-`Castor\Os\File`. 
+`Castor\Os\File`.
 
 ### `Os` Package
 
@@ -48,7 +48,7 @@ By default, `Castor\Os\File` implements both `Castor\Io\Reader` and
 `Castor\Io\Writer`, which means you can write and/or read from it, and 
 use it as an argument whenever either type is required.
 
-The `Castor\Os\File` provides a useful api to work with files.
+The `Castor\Os\File` provides a useful api to work with it.
 
 ```php
 <?php
@@ -56,20 +56,22 @@ The `Castor\Os\File` provides a useful api to work with files.
 // Opens a file. Fails if the file does not exist
 $file = Castor\Os\File::open('/some/file.pdf');
 
-echo $file->getSize();                  // Prints "34232" 
-echo $file->getContentType();           // Prints "application/pdf"
-echo $file->getPath()->getFilename();   // Prints "file.pdf"
-echo $file->getPath()->getBasename();   // Prints "file"
-echo $file->getPath()->getDirname();    // Prints "/some"
-echo $file->getPath()->getExtension();  // Prints "pdf"
-echo $file->getPath()->isAbsolute();    // Prints "true"
+echo $file->size();                     // Prints "34232" 
+echo $file->getMimeType();              // Prints "application/pdf"
+echo Castor\Io\readAll($file);          // Reads the contents of the file
 ```
 
-### Http
+Under the hood, a `Castor\Os\File` instance is nothing more than a wrapper
+over a PHP resource. This means that has an internal 8k buffer that adds
+some overhead. In the future, this library will rely on `ext_dio` to 
+directly read files from the filesystem. Buffering will be provided on 
+userland.
 
-In the `Net\Http` namespace you'll find an incomplete implementation of
-the HTTP protocol. This implementation is mutable, and heavily object
-oriented. It is much based on in the Golang implementation.
+### `Castor\Net\Http` Package
+
+In the `Castor\Net\Http` namespace you'll find an incomplete implementation of
+the HTTP protocol. This implementation is mostly mutable and much 
+based on in the Golang implementation.
 
 Inside it, there is a CGI implementation that you can use to quickly
 create PHP web applications that sit under a web server like Apache, Nginx,
@@ -79,13 +81,10 @@ It is very easy to create a simple application:
 
 ```php
 
-use function Castor\Net\Http\Cgi\serve;
-use function Castor\Net\Http\handlerFunc;
-use Castor\Net\Http\Request;
-use Castor\Net\Http\ResponseWriter;
+use Castor\Net\Http;
 
 // First, we define a simple function that writes a response
-function hello(ResponseWriter $writer, Request $request): void {
+function hello(Http\ResponseWriter $writer, Http\Request $request): void {
     $writer->getHeaders()->add('Content-Type', 'text/html');
     $writer->write(sprintf(
         '<h1>Hello world!</h1><p>The requested path is %s</p>',
@@ -94,8 +93,8 @@ function hello(ResponseWriter $writer, Request $request): void {
 }
 
 // Then, we convert that function into a Castor\Net\Http\Handler
-$handler = handlerFunc('hello');
+$handler = Http\handlerFunc('hello');
 
 // Then, we use the serve method to handle the CGI request.
-serve($handler);
+Http\Cgi\serve($handler);
 ```

@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @author Matias Navarro-Carter mnavarrocarter@gmail.com
  * @license MIT
  * @copyright 2021 CastorLabs Ltd
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -86,6 +87,14 @@ class Request
     public function getBody(): ReadCloser
     {
         return $this->body;
+    }
+
+    public function decorateBody(callable $decorator): void
+    {
+        $this->body = $decorator($this->body);
+        if (!$this->body instanceof DecoratedBody) {
+            throw new \RuntimeException('The $decorator function must return an instance of '.DecoratedBody::class);
+        }
     }
 
     public function getCookies(): array

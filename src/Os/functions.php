@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @author Matias Navarro-Carter mnavarrocarter@gmail.com
  * @license MIT
  * @copyright 2021 CastorLabs Ltd
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -74,6 +75,8 @@ function pathExists(string $path): bool
 
 namespace Castor\Os;
 
+use function copy as php_copy;
+
 /**
  * @psalm-return iterable<string>
  */
@@ -109,4 +112,12 @@ function makeDir(string $path, int $perm = 0777, bool $recursive = true): bool
 function remove(string $path): void
 {
     unlink($path);
+}
+
+function copy(string $source, string $destination): void
+{
+    $ok = php_copy($source, $destination);
+    if (false === $ok) {
+        throw new \RuntimeException('Could not copy from source to destination');
+    }
 }

@@ -14,23 +14,27 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Castor\Net\Http\Payload;
+namespace Castor\Storage;
 
-use Castor\Io;
-use Castor\Net\Http;
+use Castor\Net\Uri;
+use Castor\Os;
 
 /**
- * Class Json represents a Json payload in a Request Body.
+ * Class OsFactory.
  */
-final class Json extends Http\DecoratedBody implements Parser
+final class OsFactory implements Factory
 {
     /**
      * {@inheritDoc}
-     *
-     * @throws \JsonException
      */
-    public function parse(): array
+    public function create(Uri $uri): Driver
     {
-        return json_decode(Io\readAll($this->body), true, 512, JSON_THROW_ON_ERROR);
+        if ('os' !== $uri->getScheme()) {
+            throw new UnsupportedScheme(sprintf('Unsupported scheme "%s" for %s', $uri->getScheme(), __CLASS__));
+        }
+        $folder = $uri->getPath();
+        Os\ensureDir($folder);
+
+        return new OsDriver($folder);
     }
 }
