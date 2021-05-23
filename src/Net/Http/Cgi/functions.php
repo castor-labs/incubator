@@ -28,12 +28,13 @@ use Castor\Net\Http;
  * It also processes uploaded files and keys if the request is of the multipart
  * content type.
  *
- * If unset globals is true, after parsing the Request information, the
- * super globals are removed from scope.
+ * If $unsetGlobals is true, after parsing the Request information, the
+ * super globals are removed from scope. This can cause some undesirable
+ * side-effects in some third party libraries.
  *
  * @throws Io\Error
  */
-function serve(Http\Handler $handler, bool $unsetGlobals = true): void
+function serve(Http\Handler $handler, bool $unsetGlobals = false): void
 {
     if (PHP_SAPI === 'cli') {
         throw new Io\Error('Cannot serve in a non CGI context');
