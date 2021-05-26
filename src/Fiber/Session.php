@@ -143,6 +143,7 @@ class Session
     {
         $flashes = $this->data[self::FLASH_NEXT] ?? [];
         $this->data[self::FLASH_CURRENT] = $flashes;
+        $this->data[self::FLASH_NEXT] = [];
         $this->touched = true;
     }
 }
