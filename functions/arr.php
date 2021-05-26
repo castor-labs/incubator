@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Castor\Arr;
 
 use function sort as php_sort;
+use Traversable;
 use function usort;
 
 function map(array $array, callable $callback): array
@@ -92,4 +93,9 @@ function filter(array $array, callable $callback): array
     }
 
     return $filtered;
+}
+
+function fromIter(Traversable $iter): array
+{
+    return iterator_to_array($iter);
 }

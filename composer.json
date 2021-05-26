@@ -15,7 +15,8 @@
         "ext-json": "*",
         "mnavarrocarter/path-to-regexp-php": "^1.0",
         "brick/date-time": "^0.3.0",
-        "psr/http-message": "^1.0"
+        "psr/http-message": "^1.0",
+        "psr/container": "^1.0"
     },
     "autoload": {
         "psr-4": {
