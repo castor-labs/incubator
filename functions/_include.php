@@ -9,14 +9,22 @@ declare(strict_types=1);
  * @author Matias Navarro-Carter mnavarrocarter@gmail.com
  * @license MIT
  * @copyright 2021 CastorLabs Ltd
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-require_once __DIR__.'/src/Io/functions.php';
-require_once __DIR__.'/src/Net/functions.php';
-require_once __DIR__.'/src/Net/Http/functions.php';
-require_once __DIR__.'/src/Net/Http/Cgi/functions.php';
-require_once __DIR__.'/src/Os/functions.php';
-require_once __DIR__.'/src/functions.php';
+$paths = [
+    __DIR__.'/str.php',
+    __DIR__.'/arr.php',
+    __DIR__.'/io.php',
+    __DIR__.'/net.php',
+    __DIR__.'/net.http.php',
+    __DIR__.'/net.http.cgi.php',
+    __DIR__.'/os.php',
+    __DIR__.'/os.path.php',
+];
 
+foreach ($paths as $path) {
+    require_once $path;
+}

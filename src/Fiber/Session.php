@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace Castor\Fiber;
 
 use Brick\DateTime\Instant;
-use Castor\Arr;
 use Castor\Net\Http;
 
 /**
@@ -25,7 +24,8 @@ use Castor\Net\Http;
  */
 class Session
 {
-    private const FLASHES_KEY = '_flashes';
+    private const FLASH_CURRENT = '_flash_current';
+    private const FLASH_NEXT = '_flash_next';
 
     protected string $id;
     protected array $data;
@@ -69,22 +69,23 @@ class Session
 
     public function get(string $key)
     {
-        return $this->data[$key] ?? null;
+        return $this->data[$key] ?? $this->data[self::FLASH_CURRENT][$key] ?? null;
     }
 
     public function has(string $key): bool
     {
-        return array_key_exists($key, $this->data);
+        return array_key_exists($key, $this->data)
+            || array_key_exists($key, $this->data[self::FLASH_CURRENT] ?? []);
     }
 
     /**
      * @param $value
      */
-    public function flash(string $key, $value)
+    public function flash(string $key, $value): void
     {
-        $flashes = $this->get(self::FLASHES_KEY) ?? [];
+        $flashes = $this->get(self::FLASH_NEXT) ?? [];
         $flashes[$key] = $value;
-        $this->set(self::FLASHES_KEY, $flashes);
+        $this->set(self::FLASH_NEXT, $flashes);
     }
 
     public function set(string $key, $value): void
@@ -140,12 +141,8 @@ class Session
 
     private function processFlashes(): void
     {
-        $flashes = $this->data[self::FLASHES_KEY] ?? [];
-        if ([] === $flashes) {
-            return;
-        }
-        $this->data[self::FLASHES_KEY] = [];
-        $this->data = Arr\merge($this->data, $flashes);
+        $flashes = $this->data[self::FLASH_NEXT] ?? [];
+        $this->data[self::FLASH_CURRENT] = $flashes;
         $this->touched = true;
     }
 }

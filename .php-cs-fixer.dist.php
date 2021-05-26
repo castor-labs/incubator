@@ -22,6 +22,7 @@ return (new PhpCsFixer\Config())
     ->setFinder(
         PhpCsFixer\Finder::create()
             ->in(__DIR__.'/src')
+            ->in(__DIR__ . '/functions')
             ->in(__DIR__.'/tests')
     )
 ;
