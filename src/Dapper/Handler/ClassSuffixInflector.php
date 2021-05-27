@@ -46,6 +46,6 @@ final class ClassSuffixInflector implements Inflector
             ));
         }
 
-        return $cmdClass;
+        return $handlerClass;
     }
 }
